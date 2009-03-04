@@ -1,5 +1,0 @@
-; $Id$
-
-Site Configuration Permissions 6.x-1.x, 2009-02-13
----------------------------
-Initial commit of config_perms. Adds more granular control for items under 'administer site   configuration'
