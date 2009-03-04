@@ -9,6 +9,27 @@
  * www.iplanitglobal.com
  */
 
+/**
+ * Configure permission names for urls:
+ */
+
+$GLOBALS['config_perms_map'] = array(
+ 'administer themes'                => array('admin/build/themes', 'admin/build/themes/settings'),
+ 'administer administration theme'  => array('admin/settings/admin'),
+ 'administer clean-urls'            => array('admin/settings/clean-urls'),
+ 'administer date-time'             => array('admin/settings/date-time', 'admin/settings/date-time/lookup'),
+ 'administer error reporting'       => array('admin/settings/error-reporting'),
+ 'administer file system'           => array('admin/settings/file-system'),
+ 'administer performance'           => array('admin/settings/performance'),
+ 'administer site information'      => array('admin/settings/site-information'),
+ 'administer site maintenance'      => array('admin/settings/site-maintenance'),
+ 'administer modules'               => array('admin/build/modules', 'admin/build/modules/list/confirm', 'admin/build/modules/uninstall', 'admin/build/modules/uninstall/confirm'),
+ 'administer user profile fields'   => array('admin/user/profile'),
+ 'administer content node settings' => array('admin/content/node-settings'),
+ 'administer site building'         => array('admin/build'),
+ 'display site configuration menu'  => array('admin/settings')
+);
+
 /*******************************************************************************
  * Hook Functions
  ******************************************************************************/
@@ -19,68 +40,34 @@
  * Administer -> User management -> Permissions
  */
 function config_perms_perm() {
-  $perms = array('administer themes', 'administer administration theme', 'administer clean-urls', 'administer date-time', 'administer error reporting', 'administer file system', 'administer performance', 'administer site information', 'administer site maintenance', 'administer modules');
-	return $perms;
+ return array_keys($GLOBALS['config_perms_map']);
 }
 
 /**
 * Implementation of hook_menu_alter().
 */
 function config_perms_menu_alter(&$items) {
-	//administer administration theme
-	$items['admin/settings/admin']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/admin']['access arguments'] = array('administer administration theme');
-	//administer clean-urls
-	$items['admin/settings/clean-urls']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/clean-urls']['access arguments'] = array('administer clean-urls');
-	//administer date and time	
-	$items['admin/settings/date-time']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/date-time']['access arguments'] = array('administer date-time');
-	$items['admin/settings/date-time/lookup']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/date-time/lookup']['access arguments'] = array('administer date-time');
-	//administer error reporting	
-	$items['admin/settings/error-reporting']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/error-reporting']['access arguments'] = array('administer error reporting');	
-	//administer file system
-	$items['admin/settings/file-system']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/file-system']['access arguments'] = array('administer file system');
-	//administer modules
-	$items['admin/build/modules']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/modules']['access arguments'] = array('administer modules');
-	$items['admin/build/modules/list/confirm']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/modules/list/confirm']['access arguments'] = array('administer modules');
-	$items['admin/build/modules/uninstall']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/modules/uninstall']['access arguments'] = array('administer modules');
-	$items['admin/build/modules/uninstall/confirm']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/modules/uninstall/confirm']['access arguments'] = array('administer modules');	
-	//administer performance
-	$items['admin/settings/performance']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/performance']['access arguments'] = array('administer performance');
-	//administer site information	
-	$items['admin/settings/site-information']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/site-information']['access arguments'] = array('administer site information');
-	//administer site maintenance
-	$items['admin/settings/site-maintenance']['access callback'] = 'config_perms_access_callback';
-	$items['admin/settings/site-maintenance']['access arguments'] = array('administer site maintenance');
-	//administer themes
-	$items['admin/build/themes']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/themes']['access arguments'] = array('administer themes');
-	$items['admin/build/themes/settings']['access callback'] = 'config_perms_access_callback';
-	$items['admin/build/themes/settings']['access arguments'] = array('administer themes');
-		foreach (list_themes() as $theme) {
-			$items['admin/build/themes/settings/'. $theme->name]['access callback'] = 'config_perms_themes_access';
-			$items['admin/build/themes/settings/'. $theme->name]['access arguments'] = array($theme);
-		}	
-	}
+ foreach ($GLOBALS['config_perms_map'] as $perm => $urls) {
+   foreach ($urls as $url) {
+     $items[$url]['access callback'] = 'config_perms_access_callback';
+     $items[$url]['access arguments'] = array($perm);
+   }
+ }
+ // administer themes:
+ foreach (list_themes() as $theme) {
+   $items['admin/build/themes/settings/'. $theme->name]['access callback'] = 'config_perms_themes_access';
+   $items['admin/build/themes/settings/'. $theme->name]['access arguments'] = array($theme);
+ }    
+}
 /**
 * Access callback for theme selection and settings page
 */
 function config_perms_access_callback($perm) {
-	return user_access($perm) || user_access('administer site configuration');
+       return user_access($perm) || user_access('administer site configuration');
 }
 /**
 * Access callback for each theme's settings
 */
 function config_perms_themes_access($theme) {
-	return (user_access('administer themes') || user_access('administer site configuration')) && ($theme->status || $theme->name == variable_get('admin_theme', '0'));
+       return (user_access('administer themes') || user_access('administer site configuration')) && ($theme->status || $theme->name == variable_get('admin_theme', '0'));
 }
