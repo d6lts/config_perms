@@ -16,7 +16,7 @@ function config_perms_admin_form(&$form_state, $type='') {
     '#description' => '<p>'. t("Please note that the order in which permissions are granted are as follows:") .'</p>'. 
       "<ul>" .
         "<li>" . t("User 1 still maintains full control") .
-        "<li>" . t("Any role with 'administer site configuration' will have access to all permissions listed above") .
+       // "<li>" . t("Any role with 'administer site configuration' will have access to all permissions listed above") .
         "<li>" . t("Nothing will be available under Site building if 'display site building menu' is not checked") .
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") .
         "<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .

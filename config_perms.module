@@ -101,31 +101,11 @@ function config_perms_menu_alter(&$items) {
       $items[$url]['access arguments'] = array($perm);
     }
   }
-  // administer themes:
-  foreach (list_themes() as $theme) {
-    $items['admin/build/themes/settings/'. $theme->name]['access callback'] = 'config_perms_themes_access';
-    $items['admin/build/themes/settings/'. $theme->name]['access arguments'] = array($theme);
-  }
 }
-
-/**
- * Implementation of hook_disable().
- */
-function config_perms_disable() {
-  $resetcallback = serialize(array('administer site configuration'));
-  db_query("UPDATE {menu_router} SET access_callback = '%s', access_arguments = '%s' WHERE access_callback = '%s'", 'user_access', $resetcallback, 'config_perms_access_callback');
-}
-
+ 
 /**
 * Access callback for theme selection and settings page
 */
 function config_perms_access_callback($perm) {  
-  return user_access($perm) || user_access('administer site configuration');
-}
-
-/**
-* Access callback for each theme's settings
-*/
-function config_perms_themes_access($theme) {
-  return (user_access('administer themes') || user_access('administer site configuration')) && ($theme->status || $theme->name == variable_get('admin_theme', '0'));
+  return user_access($perm);
 }
