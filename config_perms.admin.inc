@@ -44,11 +44,11 @@ function _config_perms_form($perms) {
   $form = array();
   foreach ($perms as $key => $perm) {
     $form[$key] = array('#tree' => TRUE);
-    $form[$key]['id'] = array('#type' => 'hidden', '#default_value' => $perm->id);
-    $form[$key]['status'] = array('#type' => 'checkbox', '#default_value' => $perm->status);
-    $form[$key]['remove'] = array('#type' => 'checkbox', '#default_value' => $perm->remove);
-    $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => $perm->name, '#size' => 30);
-    $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => $perm->path, '#size' => 30);
+    $form[$key]['id'] = array('#type' => 'hidden', '#default_value' => check_plain($perm->id));
+    $form[$key]['status'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->status));
+    $form[$key]['remove'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->remove));
+    $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->name), '#size' => 30);
+    $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->path), '#size' => 30);
   }
   // Add the entry fields
   $key = count($perms);
@@ -62,8 +62,8 @@ function _config_perms_form($perms) {
       'wrapper' => 'config_perms-wrapper',
     ),
   );
-  $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => $new->name, '#size' => 30);
-  $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => $new->path, '#size' => 30);
+  $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($new->name), '#size' => 30);
+  $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($new->path), '#size' => 30);
   $form[$key]['remove'] = array('#value' => '');
   return $form;
 }

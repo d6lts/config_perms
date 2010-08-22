@@ -20,12 +20,12 @@ function config_perms_perms() {
   $perms = cache_get('config_perms');
   
   // Rebuild if not there
-  if(!is_array($perms)) {
+  if(!is_array($perms->data)) {
     config_perms_cache_rebuild();
     $perms = cache_get('config_perms');
   }
   
-  return $perms;
+  return $perms->data;
 }
 
 /**
@@ -35,7 +35,7 @@ function config_perms_cache_rebuild() {
   $perms = array();
   $result = db_query("SELECT * FROM {config_perms}");
   while ($data = db_fetch_object($result)) {
-    $perms[$data->name][] = $data->path;
+    $perms[check_plain($data->name)][] = check_plain($data->path);
   }
   
   cache_set('config_perms', $perms);
