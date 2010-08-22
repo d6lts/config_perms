@@ -16,18 +16,35 @@
  * Configure permission names for urls:
  */
 function config_perms_perms() {
-  $result = db_query("SELECT * FROM {config_perms}");
-  while ($data = db_fetch_object($result)) {
-    $perms[$data->name][] = $data->path;
+  // Load current perms
+  $perms = cache_get('config_perms');
+  
+  // Rebuild if not there
+  if(!is_array($perms)) {
+    config_perms_cache_rebuild();
+    $perms = cache_get('config_perms');
   }
   
   return $perms;
 }
 
+/**
+ * Configure permission names for urls:
+ */
+function config_perms_cache_rebuild() {
+  $perms = array();
+  $result = db_query("SELECT * FROM {config_perms}");
+  while ($data = db_fetch_object($result)) {
+    $perms[$data->name][] = $data->path;
+  }
+  
+  cache_set('config_perms', $perms);
+}
+
 /*******************************************************************************
  * Hook Functions
  ******************************************************************************/
-/**
+/*
 
 /**
  * Implementation of hook_perm

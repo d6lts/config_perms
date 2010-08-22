@@ -145,7 +145,8 @@ function config_perms_admin_form_validate($form, &$form_state) {
  */
 function config_perms_admin_form_submit($form, &$form_state) {
   $values = $form_state['values'];
-
+  
+  // Update perms db
   foreach ($values['local'] as $key => $data) {
     if ($data['remove'] && !empty($data['id'])) {
       db_query("DELETE FROM {config_perms} WHERE id = %d", $data['id']);
@@ -157,6 +158,9 @@ function config_perms_admin_form_submit($form, &$form_state) {
       db_query("INSERT INTO {config_perms} (status, name, path) VALUES (%d, '%s', '%s')", $data['status'], check_plain($data['name']), check_plain($data['path']));
     }
   }
-
+  
+  // Rebuild cache
+  config_perms_cache_rebuild();
+  
   drupal_set_message(t('The permissions have been saved.'));
 }
