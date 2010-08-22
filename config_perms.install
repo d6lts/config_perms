@@ -1,0 +1,92 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * Installation file
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function config_perms_install() {
+  // Create tables.
+  drupal_install_schema('config_perms');
+  config_perms_install_data();
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function config_perms_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('config_perms');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function config_perms_schema() {
+  $schema['config_perms'] = array(
+    'fields' => array(
+      'id' => array(
+        'description' => 'unique ID.',
+        'type' => 'serial',
+        'size' => 'tiny',
+        'not null' => TRUE,
+      ),
+      'status'  => array(
+        'description' => 'Whether this field is enabled or not.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'path' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+function config_perms_install_data() {
+  $perms = array(
+    'administer themes'                => array('admin/build/themes', 'admin/build/themes/settings'),
+    'administer administration theme'  => array('admin/settings/admin'),
+    'administer clean-urls'            => array('admin/settings/clean-urls'),
+    'administer date-time'             => array('admin/settings/date-time', 'admin/settings/date-time/lookup'),
+    'administer error reporting'       => array('admin/settings/error-reporting'),
+    'administer file system'           => array('admin/settings/file-system'),
+    'administer performance'           => array('admin/settings/performance'),
+    'administer site information'      => array('admin/settings/site-information'),
+    'administer site maintenance'      => array('admin/settings/site-maintenance'),
+    'administer modules'               => array('admin/build/modules', 'admin/build/modules/list/confirm', 'admin/build/modules/uninstall', 'admin/build/modules/uninstall/confirm'),
+    'administer user profile fields'   => array('admin/user/profile'),
+    'administer content node settings' => array('admin/content/node-settings'),
+    'display site building menu'       => array('admin/build'),
+    'display site configuration menu'  => array('admin/settings'),
+  );
+  
+  foreach ($perms as $name => $perm) {
+    foreach ($perm as $path) {
+      db_query("INSERT INTO {config_perms} (status, name, path) VALUES (%d, '%s', '%s')", 1, $name, $path);
+    }
+  }
+}
+
+function config_perms_update_6200() {
+ drupal_install_schema('config_perms');
+ config_perms_install_data();
+}
