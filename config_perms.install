@@ -13,7 +13,6 @@ function config_perms_install() {
   // Create tables.
   drupal_install_schema('config_perms');
   config_perms_install_data();
-  config_perms_cache_rebuild();
 }
 
 /**
@@ -90,5 +89,4 @@ function config_perms_install_data() {
 function config_perms_update_6200() {
  drupal_install_schema('config_perms');
  config_perms_install_data();
- config_perms_cache_rebuild();
 }
