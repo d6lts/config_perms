@@ -26,10 +26,12 @@ function config_perms_admin_form(&$form_state, $type='') {
     '#collapsed' => 0,
   );
 
-  $result = db_query("SELECT * FROM {config_perms}");
-  while ($data = db_fetch_object($result)) {
-    $perms[] = $data;
-  }
+  //$result = db_query("SELECT * FROM {config_perms}");
+  $perms = config_perms_load();
+  $perms = (object) $perms;
+  //while ($data = db_fetch_object($result)) {
+    //$perms[] = $data;
+  //}
 
   $form['perms']['local'] = array('#theme' => 'config_perms_form', '#tree' => TRUE, '#prefix' => '<div id="config_perms-wrapper">', '#suffix' => '</div>');
   $form['perms']['local'] += _config_perms_form($perms);
@@ -41,14 +43,18 @@ function config_perms_admin_form(&$form_state, $type='') {
  * Permissions table for the administration form 
  */
 function _config_perms_form($perms) {
+      //$disabled =  'disabled' : '';
+  
+  
   $form = array();
   foreach ($perms as $key => $perm) {
+    $attributes = in_array($perm->id, array(1, 2)) ? array('disabled' => $disabled) : array();
     $form[$key] = array('#tree' => TRUE);
     $form[$key]['id'] = array('#type' => 'hidden', '#default_value' => check_plain($perm->id));
-    $form[$key]['status'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->status));
-    $form[$key]['remove'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->remove));
-    $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->name), '#size' => 30);
-    $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->path), '#size' => 30);
+    $form[$key]['status'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->status), '#attributes' => $attributes);
+    $form[$key]['remove'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->remove), '#attributes' => $attributes) ;
+    $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->name), '#size' => 50, '#attributes' => $attributes);
+    $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->path), '#size' => 50, '#attributes' => $attributes);
   }
   // Add the entry fields
   $key = count($perms);
@@ -62,8 +68,8 @@ function _config_perms_form($perms) {
       'wrapper' => 'config_perms-wrapper',
     ),
   );
-  $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($new->name), '#size' => 30);
-  $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($new->path), '#size' => 30);
+  $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($new->name), '#size' => 50);
+  $form[$key]['path'] = array('#type' => 'textfield', '#default_value' => check_plain($new->path), '#size' => 50);
   $form[$key]['remove'] = array('#value' => '');
   return $form;
 }
@@ -146,15 +152,14 @@ function config_perms_admin_form_validate($form, &$form_state) {
 function config_perms_admin_form_submit($form, &$form_state) {
   $values = $form_state['values'];
   
-  // Update perms db
   foreach ($values['local'] as $key => $data) {
-    if ($data['remove'] && !empty($data['id'])) {
+    if ($data['remove'] && !empty($data['id'])) { // Delete
       db_query("DELETE FROM {config_perms} WHERE id = %d", $data['id']);
     } 
-    elseif (!empty($data['id'])) {
+    elseif (!empty($data['id']) && !empty($data['name']) && !empty($data['path'])) { // Update
       db_query("UPDATE {config_perms} SET status = %d, name = '%s', path = '%s' WHERE id = %d", $data['status'], check_plain($data['name']), check_plain($data['path']), $data['id']);
     } 
-    elseif ($data['status'] !== 'Add') {
+    elseif ($data['status'] !== 'Add' && !empty($data['name']) && !empty($data['path'])) { // Insert
       db_query("INSERT INTO {config_perms} (status, name, path) VALUES (%d, '%s', '%s')", $data['status'], check_plain($data['name']), check_plain($data['path']));
     }
   }
