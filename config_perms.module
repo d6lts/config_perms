@@ -15,40 +15,24 @@
 /**
  * Load all permissions
  */
-function config_perms_perms() {
-  // Load perms via ctools is present.
-  if (module_exists('ctools')) {
-    ctools_include('export');
-    $loaded = ctools_export_load_object('config_perms', 'all');
-    foreach ($loaded as $name => $perm) {
-      $perms[$name] = (array) $perm;
-    }
-    return $perms;
-  }
-  
+function config_perms_perms($machine_name = NULL) {
   // Load current perms
   $perms = cache_get('config_perms');
-  
+
   // Rebuild if not there
   if(!is_array($perms->data)) {
     config_perms_cache_rebuild();
     $perms = cache_get('config_perms');
   }
   
-  return $perms->data;
+  return ($machine_name) ? $perms->data[$machine_name] : $perms->data;
 }
 
 /**
  * Configure permission names for urls:
  */
 function config_perms_cache_rebuild() {
-  $perms = array();
-  $result = db_query("SELECT * FROM {config_perms} WHERE status = 1");
-  while ($data = db_fetch_array($result)) {
-    //$perms[check_plain($data->name)][] = check_plain($data->path);
-    $perms[$data->pid] = $data;
-  }
-  
+  $perms = config_perms_load(); 
   cache_set('config_perms', $perms);
 }
 
@@ -62,7 +46,15 @@ function config_perms_cache_rebuild() {
  * Administer -> User management -> Permissions
  */
 function config_perms_perm() {
- return array_keys(config_perms_perms());
+  $permissions = array();
+  
+  $perms = config_perms_perms();
+  foreach($perms as $perm) {
+    if($perm->status)
+      $permissions[] = check_plain($perm->name);
+  }
+ 
+ return $permissions;
 }
 
 /**
@@ -71,7 +63,6 @@ function config_perms_perm() {
 function config_perms_flush_caches() {
   cache_clear_all('config_perms', 'cache');
 }
-
 
 /**
  * Implementation of hook_theme();.
@@ -149,49 +140,51 @@ function config_perms_access_callback($perm) {
 /*
 
 /**
-* Load one preset or all presets.
-*
-* @param $name
-*   This perm name value. Optional.
-* @return
-*   If $name is specified, an array of options for the specific preset.
-*   If not, a nested array containing options for all presets.
+* Load all permissions
 */
-function config_perms_load($name = null) {
-  // Load perms via ctools is present.
-  if (module_exists('ctools')) {
+function config_perms_load() {
+  if(module_exists('ctools')) {
     ctools_include('export');
-    if ($name) {
-      $perms = ctools_export_load_object('config_perms', 'names', array($name));
-      return isset($perms[$name]) ? $perms[$name] : FALSE;
-    }
-    else {
-      return ctools_export_load_object('config_perms');
-    }
+    return ctools_export_load_object('config_perms');
   }
   
-  // Load current perms
-  $perms = cache_get('config_perms');
-  
-  // Rebuild if not there
-  if(!is_array($perms->data)) {
-    config_perms_cache_rebuild();
-    $perms = cache_get('config_perms');
+  $result = db_query("SELECT * FROM {config_perms}");
+  while ($perm = db_fetch_object($result)) {
+    $perms[$perm->machine_name] = $perm;
   }
-  
-  return ($name) ? $perms->data[$name] : $perms->data;
 }
 
+/**
+ * Inserts or updates a perm into the database.
+ *
+ * @param $preset
+ *   The perm object to be inserted.
+ */
+function config_perms_save($perm) {
+  $perm = (object)$perm;
+  
+  // Generate machine name
+  $perm->machine_name = config_perms_generate_machine_name($perm->name);
+  
+  if ($perm->pid) {
+    drupal_write_record('config_perms', $perm, 'pid');
+  }
+  else {
+    drupal_write_record('config_perms', $perm);
+  }
+  
+  return TRUE;
+}
 
 /**
 * Delete a perm.
 *
 * @param $name
-*   A perm object, or a preset's pid value.
+*   A perm object, or a perms name
 */
 function config_perms_delete($perm) {
-  $name = is_object($perm) ? $perm->name : $perm;
-  db_query('DELETE FROM {config_perms} WHERE pid = %d', $name);
+  $pid = is_object($perm) ? $perm->pid : $perm;
+  db_query('DELETE FROM {config_perms} WHERE pid = %d', $pid);
   
   if (module_exists('ctools')) {
     // Clear the Ctools export API cache.
@@ -200,33 +193,22 @@ function config_perms_delete($perm) {
   }
 }
 
-
 /**
-* Implementation of hook_ctools_plugin_api().
-*
-* Tell Ctools that we support the default_ffmpeg_converter_presets API.
+ * Generate a machine name given a string
+ *
+ */
+function config_perms_generate_machine_name($string) {
+  //return preg_replace('/[^[:alnum:]_]/', '_', strtolower(trim($string) ) );
+  return strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $string));
+}
 
-function config_perms_ctools_plugin_api($owner, $api) {
-  if ($owner == 'config_perms' && $api == 'config_perms_defaults') {
-    return array('version' => 1);
+function config_perms_parse_path($path) {
+  if(is_array($path)) {
+	$string = implode("\n", $path);
+	return $string;
+  }else{
+    $path = str_replace(array("\r\n", "\n\r", "\n", "\r"), "\n", $path);
+	$parts = explode("\n", $path);
+	return $parts;
   }
 }
-
-/**
-* Implementation of hook_default_ffmpeg_converter_preset().
-*
-* Provide a couple of default presets.
-
-function config_perms_default_config_perms() {
-  $export = array();
-
-  $preset = new stdClass;
-  $preset->api_version = 1;
-  $preset->name = 'default_flv';
-  $preset->description = 'Default FLV preset';
-  $preset->ffmpeg_wrapper = ffmpeg_converter_default_options();
-  $export['default-flv'] = $preset;
-
-  return $export;
-}
-*/

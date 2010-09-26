@@ -13,6 +13,7 @@ function config_perms_install() {
   // Create tables.
   drupal_install_schema('config_perms');
   config_perms_install_data();
+  cache_clear_all('config_perms', 'cache');
 }
 
 /**
@@ -21,6 +22,7 @@ function config_perms_install() {
 function config_perms_uninstall() {
   // Remove tables.
   drupal_uninstall_schema('config_perms');
+  cache_clear_all('config_perms', 'cache');
 }
 
 /**
@@ -31,7 +33,7 @@ function config_perms_schema() {
     'description' => 'The config perms table.',
     // Optional CTools export.inc integration
     'export' => array(
-      'key' => 'name',
+      'key' => 'machine_name',
       'identifier' => 'config_perms',
       'default hook' => 'config_perms',
       'api' => array(
@@ -42,13 +44,12 @@ function config_perms_schema() {
       ),
     ),
     'fields' => array(
-      'name' => array(
+      'machine_name' => array(
         'description' => 'The primary identifier for a permission',
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
       ),
-      /*
       'pid' => array(
         'type' => 'serial',
         'unsigned' => TRUE,
@@ -56,7 +57,6 @@ function config_perms_schema() {
         'description' => 'Primary ID field for the table. Not used for anything except internal lookups.',
         'no export' => TRUE, // Do not export database-only keys.
       ),
-      */
       'status'  => array(
         'description' => 'Whether this field is enabled or not.',
         'type' => 'int',
@@ -71,19 +71,22 @@ function config_perms_schema() {
         'default' => '',
       ),
       'path' => array(
-        'type' => 'varchar',
-        'length' => 255,
+        'type' => 'text',
+        'size' => 'medium',
         'not null' => TRUE,
-        'default' => '',
-      ),
+        'serialize' => TRUE,
+       ),
     ),
-    'primary key' => array('name'),
+    'primary key' => array('pid'),
+    'unique keys' => array(
+      'name' => array('machine_name'),
+    ),
   );
 
   return $schema;
 }
 
-function config_perms_install_data() {
+function config_perms_install_data(&$ret) {
   $perms = array(
     'administer theme selection'       => array('admin/build/themes'),
     'administer theme global settings' => array('admin/build/themes/settings'),
@@ -101,11 +104,10 @@ function config_perms_install_data() {
     'display site building menu'       => array('admin/build'),
     'display site configuration menu'  => array('admin/settings'),
   );
-  
-  foreach ($perms as $name => $perm) {
-    foreach ($perm as $path) {
-      db_query("INSERT INTO {config_perms} (status, name, path) VALUES (%d, '%s', '%s')", 1, $name, $path);
-    }
+
+  foreach ($perms as $name => $paths) {
+   db_query("INSERT INTO {config_perms} (machine_name, status, name, path) VALUES ('%s', %d, '%s', %b)",
+    strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $name)), 1, $name, serialize($paths));
   }
 }
 
@@ -115,6 +117,7 @@ function config_perms_update_6200() {
  $schema = config_perms_schema();
  db_create_table($ret, 'config_perms', $schema['config_perms']);
  config_perms_install_data();
+ cache_clear_all('config_perms', 'cache');
  
  return $ret;
 }
