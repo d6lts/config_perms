@@ -1,4 +1,4 @@
 ; $Id$
 name = Site Configuration Permissions
-description = Adds more granular permissions for items under 'administer site configuration'.
+description = Add custom user permissions.
 core = 6.x

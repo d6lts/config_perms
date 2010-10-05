@@ -20,7 +20,7 @@ function config_perms_perms($machine_name = NULL) {
   $perms = cache_get('config_perms');
 
   // Rebuild if not there
-  if(!is_array($perms->data)) {
+  if(!$perms) {
     config_perms_cache_rebuild();
     $perms = cache_get('config_perms');
   }
@@ -49,6 +49,8 @@ function config_perms_perm() {
   $permissions = array();
   
   $perms = config_perms_perms();
+  $perms += config_perms_persistant();
+  
   foreach($perms as $perm) {
     if($perm->status)
       $permissions[] = check_plain($perm->name);
@@ -106,10 +108,10 @@ function config_perms_menu() {
 * Implementation of hook_menu_alter().
 */
 function config_perms_menu_alter(&$items) {
-  foreach (config_perms_perms() as $perm => $urls) {
-    foreach ($urls as $url) {      
-      $items[$url]['access callback'] = 'config_perms_access_callback';
-      $items[$url]['access arguments'] = array($perm);
+  foreach (config_perms_perms() as $perm) {
+    foreach ($perm->path as $path) {      
+      $items[$path]['access callback'] = 'config_perms_access_callback';
+      $items[$path]['access arguments'] = array($perm);
     }
   }
   // administer themes:
@@ -124,14 +126,21 @@ function config_perms_menu_alter(&$items) {
 */
 function config_perms_themes_access($theme) {
   //return (user_access('administer themes') || user_access('administer site configuration')) && ($theme->status || $theme->name == variable_get('admin_theme', '0'));
-  return (user_access('administer theme selection') && ($theme->status || $theme->name == variable_get('admin_theme', '0')));
+  //return (user_access('administer theme selection') && ($theme->status || $theme->name == variable_get('admin_theme', '0')));
+  if(user_access('administer themes'))
+    return TRUE;
+  
+  if(!user_access('administer themes') && (user_access('administer enabled themes') && $theme->status))
+    return TRUE;
+  
+  return FALSE;
 }
  
 /**
 * Access callback
 */
 function config_perms_access_callback($perm) {  
-  return user_access($perm);
+  return user_access(check_plain($perm->name));
 }
 
 /*******************************************************************************
@@ -174,6 +183,22 @@ function config_perms_save($perm) {
   }
   
   return TRUE;
+}
+
+/**
+ * Peristant permissions
+ */
+function config_perms_persistant() {
+  $persistant = array(
+    array('name' => 'administer themes', 'status' => 1, 'paths' => array()),
+    array('name' => 'administer enabled themes', 'status' => 1, 'paths' => array()),
+  );
+  
+  foreach($persistant as $p) {
+    $perms[config_perms_generate_machine_name($p['name'])] = (object) $p;
+  }
+  
+  return $perms;
 }
 
 /**

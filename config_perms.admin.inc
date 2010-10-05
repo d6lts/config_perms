@@ -19,9 +19,9 @@ function config_perms_admin_form(&$form_state, $type='') {
        // "<li>" . t("Any role with 'administer site configuration' will have access to all permissions listed above") .
         "<li>" . t("Nothing will be available under Site building if 'display site building menu' is not checked") .
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") .
-        "<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .
-      "</ul>" .
-      '<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
+        //"<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .
+      "</ul>",
+      //'<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
     '#collapsible' => 1,
     '#collapsed' => 0,
   );
@@ -105,7 +105,7 @@ function config_perms_ahah() {
       $perm->pid = check_plain($data['pid']);
       $perm->machine_name = check_plain($data['machine_name']);
       $perm->name = check_plain($data['name']);
-      $perm->path = check_plain($data['path']);
+      $perm->path = config_perms_parse_path(check_plain($data['path']));
       $perm->status = ($key == $newest-1) ? 1 : (int)isset($data['status']);
       $perm->remove = (int)isset($data['remove']);
       $perms[] = $perm;

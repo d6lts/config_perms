@@ -13,7 +13,6 @@ function config_perms_install() {
   // Create tables.
   drupal_install_schema('config_perms');
   config_perms_install_data();
-  cache_clear_all('config_perms', 'cache');
 }
 
 /**
@@ -86,10 +85,12 @@ function config_perms_schema() {
   return $schema;
 }
 
-function config_perms_install_data(&$ret) {
+function config_perms_install_data() {
   $perms = array(
-    'administer theme selection'       => array('admin/build/themes'),
-    'administer theme global settings' => array('admin/build/themes/settings'),
+    //'administer themes'                => array('admin/build/themes'),
+    //'administer enabled themes'        => array('admin/build/themes/settings'),
+    //'administer disabled theme selection' => array('admin/build/themes/settings'),
+    //'administer theme global settings' => array('admin/build/themes/settings'),
     'administer administration theme'  => array('admin/settings/admin'),
     'administer clean-urls'            => array('admin/settings/clean-urls'),
     'administer date-time'             => array('admin/settings/date-time', 'admin/settings/date-time/lookup'),
@@ -117,7 +118,6 @@ function config_perms_update_6200() {
  $schema = config_perms_schema();
  db_create_table($ret, 'config_perms', $schema['config_perms']);
  config_perms_install_data();
- cache_clear_all('config_perms', 'cache');
  
  return $ret;
 }
