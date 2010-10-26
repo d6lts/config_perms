@@ -154,13 +154,16 @@ function config_perms_access_callback($perm) {
 function config_perms_load() {
   if(module_exists('ctools')) {
     ctools_include('export');
-    return ctools_export_load_object('config_perms');
+    $perms = ctools_export_load_object('config_perms');
+  }else{
+    $result = db_query("SELECT * FROM {config_perms}");
+    while ($perm = db_fetch_object($result)) {
+      $perm->path = unserialize($perm->path);
+      $perms[$perm->machine_name] = $perm;
+    }
   }
-  
-  $result = db_query("SELECT * FROM {config_perms}");
-  while ($perm = db_fetch_object($result)) {
-    $perms[$perm->machine_name] = $perm;
-  }
+
+  return $perms;
 }
 
 /**
