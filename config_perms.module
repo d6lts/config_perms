@@ -49,7 +49,7 @@ function config_perms_perm() {
   $permissions = array();
   
   $perms = config_perms_perms();
-  $perms += config_perms_persistant();
+  //$perms += config_perms_persistant();
   
   foreach($perms as $perm) {
     if($perm->status)
@@ -140,6 +140,8 @@ function config_perms_access_callback($perm) {
 * Load all permissions
 */
 function config_perms_load() {
+  $perms = array();
+  
   if(module_exists('ctools')) {
     ctools_include('export');
     $perms = ctools_export_load_object('config_perms');
