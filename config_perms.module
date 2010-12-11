@@ -115,25 +115,13 @@ function config_perms_menu_alter(&$items) {
     }
   }
   // administer themes:
+  // TODO
+  /*
   foreach (list_themes() as $theme) {
     $items['admin/build/themes/settings/'. $theme->name]['access callback'] = 'config_perms_themes_access';
     $items['admin/build/themes/settings/'. $theme->name]['access arguments'] = array($theme);
   }
-}
-
-/**
-* Access callback for each theme's settings
-*/
-function config_perms_themes_access($theme) {
-  //return (user_access('administer themes') || user_access('administer site configuration')) && ($theme->status || $theme->name == variable_get('admin_theme', '0'));
-  //return (user_access('administer theme selection') && ($theme->status || $theme->name == variable_get('admin_theme', '0')));
-  if(user_access('administer themes'))
-    return TRUE;
-  
-  if(!user_access('administer themes') && (user_access('administer enabled themes') && $theme->status))
-    return TRUE;
-  
-  return FALSE;
+  */
 }
  
 /**
