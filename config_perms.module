@@ -109,9 +109,11 @@ function config_perms_menu() {
 */
 function config_perms_menu_alter(&$items) {
   foreach (config_perms_perms() as $perm) {
-    foreach ($perm->path as $path) {      
-      $items[$path]['access callback'] = 'config_perms_access_callback';
-      $items[$path]['access arguments'] = array($perm);
+    foreach ($perm->path as $path) {
+      if($items[$path]) {
+        $items[$path]['access callback'] = 'config_perms_access_callback';
+        $items[$path]['access arguments'] = array($perm);
+      }
     }
   }
   // administer themes:
