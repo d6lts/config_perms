@@ -1,3 +1,9 @@
-name = Site Configuration Permissions
+; $Id$
+name = Custom Permissions
 description = Allows additional permissions to be created and managed through a administration form.
-core = 6.x
+core = 7.x
+
+
+files[] = config_perms.admin.inc
+files[] = config_perms.install
+files[] = config_perms.module

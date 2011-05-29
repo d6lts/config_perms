@@ -1,4 +1,5 @@
 <?php
+// $Id$
 
 /**
  * @file
@@ -8,11 +9,11 @@
 /**
  * Administration form
  */
-function config_perms_admin_form(&$form_state, $type='') {
+function config_perms_admin_form($form, &$form_state, $type = '') {
   $form['perms'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Site Configuration Permissions'),
-    '#description' => '<p>'. t("Please note that the order in which permissions are granted are as follows:") .'</p>'. 
+    '#title' => t('Custom Permissions'),
+    '#description' => '<p>' . t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
       "<ul>" .
         "<li>" . t("User 1 still maintains full control") .
        // "<li>" . t("Any role with 'administer site configuration' will have access to all permissions listed above") .
@@ -20,35 +21,67 @@ function config_perms_admin_form(&$form_state, $type='') {
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") .
         //"<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .
       "</ul>",
-      //'<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
+    //'<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
     '#collapsible' => 1,
     '#collapsed' => 0,
   );
-  
-  //config_perms_cache_rebuild();
-  $perms = config_perms_perms();
-  //print_r($perms);
 
-  $form['perms']['local'] = array('#theme' => 'config_perms_form', '#tree' => TRUE, '#prefix' => '<div id="config_perms-wrapper">', '#suffix' => '</div>');
+  config_perms_cache_rebuild();
+  $perms = config_perms_perms();
+
+  $form['perms']['local'] = array(
+    '#theme' => 'config_perms_form',
+    '#tree' => TRUE,
+    '#prefix' => '<div id="config_perms-wrapper">',
+    '#suffix' => '</div>',
+  );
   $form['perms']['local'] += _config_perms_form($perms);
-  $form['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
   return $form;
 }
 
 /**
- * Permissions table for the administration form 
+ * Permissions table for the administration form
  */
 function _config_perms_form($perms) {
   $form = array();
   foreach ($perms as $key => $perm) {
-    $attributes = in_array($perm->id, array(1, 2)) ? array('disabled' => $disabled) : array();
+    //$attributes = in_array($perm->id, array(1, 2)) ? array('disabled' => $disabled) : array();
     $form[$key] = array('#tree' => TRUE);
-    $form[$key]['pid'] = array('#type' => 'hidden', '#default_value' => check_plain($perm->pid));
-    $form[$key]['machine_name'] = array('#type' => 'hidden', '#default_value' => check_plain($perm->machine_name));
-    $form[$key]['status'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->status), '#attributes' => $attributes);
-    $form[$key]['remove'] = array('#type' => 'checkbox', '#default_value' => check_plain($perm->remove), '#attributes' => $attributes) ;
-    $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($perm->name), '#size' => 30, '#attributes' => $attributes);
-    $form[$key]['path'] = array('#type' => 'textarea', '#default_value' => config_perms_parse_path($perm->path), '#size' => 50, '#rows' => 2, '#attributes' => $attributes);
+    $form[$key]['pid'] = array(
+      '#type' => 'hidden',
+      '#default_value' => check_plain($perm->pid),
+    );
+    $form[$key]['machine_name'] = array(
+      '#type' => 'hidden',
+      '#default_value' => check_plain($perm->machine_name),
+    );
+    $form[$key]['status'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => check_plain($perm->status),
+      //'#attributes' => $attributes,
+    );
+    $form[$key]['remove'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => 0,
+      //'#attributes' => $attributes,
+    );
+    $form[$key]['name'] = array(
+      '#type' => 'textfield',
+      '#default_value' => check_plain($perm->name),
+      '#size' => 30,
+      //'#attributes' => $attributes,
+    );
+    $form[$key]['path'] = array(
+      '#type' => 'textarea',
+      '#default_value' => config_perms_parse_path($perm->path),
+      '#size' => 50,
+      '#rows' => 2,
+      //'#attributes' => $attributes,
+    );
   }
   // Add the entry fields
   $key = count($perms);
@@ -62,8 +95,17 @@ function _config_perms_form($perms) {
       'wrapper' => 'config_perms-wrapper',
     ),
   );
-  $form[$key]['name'] = array('#type' => 'textfield', '#default_value' => check_plain($new->name), '#size' => 30);
-  $form[$key]['path'] = array('#type' => 'textarea', '#default_value' => check_plain($new->path), '#rows' => 2, '#size' => 50);
+  $form[$key]['name'] = array(
+    '#type' => 'textfield',
+    '#default_value' => '',
+    '#size' => 30,
+  );
+  $form[$key]['path'] = array(
+    '#type' => 'textarea',
+    '#default_value' => '',
+    '#rows' => 2,
+    '#size' => 50,
+  );
   $form[$key]['remove'] = array('#value' => '');
   return $form;
 }
@@ -71,7 +113,8 @@ function _config_perms_form($perms) {
 /**
  * Administration form theme function
  */
-function theme_config_perms_form($form) {
+function theme_config_perms_form($variables) {
+  $form = $variables['form'];
   $header = array(t('Enabled'), t('Delete'), t('Name'), t('Path(s)'));
   $rows = array();
   foreach (element_children($form) as $key) {
@@ -82,8 +125,8 @@ function theme_config_perms_form($form) {
     $row[] = drupal_render($form[$key]['path']);
     $rows[] = $row;
   }
-  $output = theme('table', $header, $rows);
-  $output .= drupal_render($form);
+  $output = theme('table', array('header' => $header, 'rows' => $rows));
+  $output .= drupal_render_children($form);
   return $output;
 }
 
@@ -105,17 +148,18 @@ function config_perms_ahah() {
       $perm->machine_name = check_plain($data['machine_name']);
       $perm->name = check_plain($data['name']);
       $perm->path = config_perms_parse_path(check_plain($data['path']));
-      $perm->status = ($key == $newest-1) ? 1 : (int)isset($data['status']);
-      $perm->remove = (int)isset($data['remove']);
+      //$perm->status = ($key == $newest -1) ? 1 : (int) isset($data['status']);
+      $perm->status = 1;
+      $perm->remove = (int) isset($data['remove']);
       $perms[] = $perm;
-      
+
       unset($cache->data['perms']['local'][$key]);
     }
   }
-  
+
   $form = _config_perms_form($perms);
   $cache->data['perms']['local'] = array_merge($cache->data['perms']['local'], $form);
-  cache_set('form_'. $_POST['form_build_id'], $cache->data, 'cache_form', $cache->expire);
+  cache_set('form_' . $_POST['form_build_id'], $cache->data, 'cache_form', $cache->expire);
   $form = $cache->data['perms'];
   $form += array(
     '#post' => $_POST,
@@ -123,13 +167,15 @@ function config_perms_ahah() {
     '#tree' => FALSE,
     '#parents' => array(),
   );
-  drupal_alter('form', $form, array(), 'config_perms_ahah');
+  //$placeholder = NULL;
+  //drupal_alter('form', $form, $placeholder, 'config_perms_ahah');
+  drupal_alter('form', $form);
   $form_state['submitted'] = FALSE;
   $form = form_builder('config_perms_ahah', $form, $form_state);
   $output = theme('status_messages') . drupal_render($form['local']);
-  
-  print drupal_to_js(array('status' => TRUE, 'data' => $output));
-  
+
+  print drupal_json_encode(array('status' => TRUE, 'data' => $output));
+
   // Kill Devel if it's installed
   $GLOBALS['devel_shutdown'] = TRUE;
   exit;
@@ -138,8 +184,7 @@ function config_perms_ahah() {
 /**
  * Validate handler
  */
-function config_perms_admin_form_validate($form, &$form_state) {
-}
+function config_perms_admin_form_validate($form, &$form_state) { }
 
 /**
  * Submit handler.
@@ -149,17 +194,17 @@ function config_perms_admin_form_submit($form, &$form_state) {
 
   foreach ($values['local'] as $key => $data) {
     if ($data['remove'] && !empty($data['pid'])) { // Delete
-      //db_query("DELETE FROM {config_perms} WHERE id = '%s'", $data['pid']);
-      config_perms_delete((object)$data);
-    } 
+      config_perms_delete((object) $data);
+    }
     elseif (!empty($data['name']) && !empty($data['path'])) { // Update || Insert
       $data['path'] = config_perms_parse_path($data['path']);
-      config_perms_save((object)$data);
+      config_perms_save((object) $data);
     }
   }
-  
-  // Rebuild cache
+
+  // Rebuild menu and cache
+  menu_rebuild();
   config_perms_cache_rebuild();
-  
+
   drupal_set_message(t('The permissions have been saved.'));
 }
