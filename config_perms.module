@@ -83,15 +83,7 @@ function config_perms_theme() {
  */
 function config_perms_menu() {
   $items = array();
-/*
-  $items['config_perms/ahah'] = array(
-    'type' => MENU_CALLBACK,
-    'page callback' => 'config_perms_ahah',
-    'page arguments' => array(),
-    'access arguments' => array('administer custom permissions'),
-    'file' => 'config_perms.admin.inc',
-  );
-*/
+
   $items['admin/people/custom_permissions'] = array(
     'title' => 'Custom Permissions',
     'description' => 'Allows additional permissions to be created and managed through a administration form',
@@ -110,6 +102,7 @@ function config_perms_menu() {
  * Implements hook_menu_alter().
  */
 function config_perms_menu_alter(&$items) {
+  /*
   foreach (config_perms_perms() as $perm) {
     foreach ($perm->path as $path) {
       if (isset($items[$path]) && $perm->status) {
@@ -118,14 +111,19 @@ function config_perms_menu_alter(&$items) {
       }
     }
   }
-  // administer themes:
-  // TODO
-  /*
-   foreach (list_themes() as $theme) {
-   $items['admin/appearance/settings/'. $theme->name]['access callback'] = 'config_perms_themes_access';
-   $items['admin/appearance/settings/'. $theme->name]['access arguments'] = array($theme);
-   }
-   */
+  */
+  
+  // Run through all menu items and leter them accordingly
+  foreach($items as $key => $item) {
+    foreach (config_perms_perms() as $perm) {
+      foreach ($perm->path as $path) { 
+        if (drupal_match_path($key, $path) && $perm->status) {
+          $items[$key]['access callback'] = 'config_perms_access_callback';
+          $items[$key]['access arguments'] = array($perm);
+        }
+      }
+    }
+  }
 }
 
 /**

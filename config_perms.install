@@ -89,13 +89,13 @@ function config_perms_schema() {
 
 function _config_perms_install_data() {
   $perms = array(
-    'administer administration theme' => array('admin/config/admin'),
+    //'administer administration theme' => array('admin/config/admin'),
     'administer clean-urls' => array('admin/config/search/clean-urls'),
-    'administer date-time' => array('admin/config/date-time', 'admin/config/date-time/lookup'),
+    'administer date-time' => array('admin/config/regional/date-time', 'admin/config/regional/date-time/*'),
     'administer error reporting' => array('admin/config/error-reporting'),
     'administer file system' => array('admin/config/file-system'),
     'administer performance' => array('admin/config/development/performance'),
-    'administer site information' => array('admin/config/site-information'),
+    'administer site information' => array('admin/config/system/site-information'),
     'administer site maintenance' => array('admin/config/development/maintenance'),
     'administer modules' => array('admin/modules', 'admin/modules/list/confirm', 'admin/modules/uninstall', 'admin/modules/uninstall/confirm'),
     'administer user profile fields' => array('admin/user/profile'),
