@@ -14,12 +14,12 @@
 /**
  * Load all permissions
  */
-function config_perms_perms($machine_name = NULL) {
+function config_perms_perms($machine_name = NULL, $rebuild = FALSE) {
   // Load current perms
   $perms = cache_get('config_perms');
 
   // Rebuild if not there
-  if (!$perms) {
+  if (!$perms || $rebuild) {
     config_perms_cache_rebuild();
     $perms = cache_get('config_perms');
   }
@@ -83,7 +83,7 @@ function config_perms_theme() {
  */
 function config_perms_menu() {
   $items = array();
-
+/*
   $items['config_perms/ahah'] = array(
     'type' => MENU_CALLBACK,
     'page callback' => 'config_perms_ahah',
@@ -91,6 +91,7 @@ function config_perms_menu() {
     'access arguments' => array('administer custom permissions'),
     'file' => 'config_perms.admin.inc',
   );
+*/
   $items['admin/people/custom_permissions'] = array(
     'title' => 'Custom Permissions',
     'description' => 'Allows additional permissions to be created and managed through a administration form',
@@ -150,8 +151,11 @@ function config_perms_loadperms() {
     $perms = ctools_export_load_object('config_perms');
   }
   else {
-    $result = db_query("SELECT * FROM {config_perms}");
-    while ($perm = db_fetch_object($result)) {
+    $result = db_select('config_perms')
+      ->fields('config_perms')
+      ->execute();
+
+    foreach ($result as $perm) {
       $perm->path = unserialize($perm->path);
       $perms[$perm->machine_name] = $perm;
     }
@@ -178,8 +182,8 @@ function config_perms_save($perm) {
   else {
     drupal_write_record('config_perms', $perm);
   }
-
-  return TRUE;
+  
+  return $perm;
 }
 
 /**

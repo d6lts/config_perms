@@ -9,21 +9,21 @@
  * Implements hook_install().
  */
 function config_perms_install() {
-  // Create tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('config_perms')
+  // Install defaults
   _config_perms_install_data();
-  cache_clear_all('config_perms', 'cache');
+  
+  // Rebuild menu and cache
+  config_perms_cache_rebuild();
+  menu_rebuild();
 }
 
 /**
  * Implements hook_uninstall().
  */
 function config_perms_uninstall() {
-  // Remove tables.
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_uninstall_schema('config_perms')
+  // Clear cache and rebuild menu
   cache_clear_all('config_perms', 'cache');
+  menu_rebuild();
 }
 
 /**
@@ -119,19 +119,21 @@ function _config_perms_install_data() {
 }
 
 /**
- * @todo Please document this function.
- * @see http://drupal.org/node/1354
+ * Update
+ * Should we still have this function in 7.x?
  */
 function config_perms_update_6200() {
   $ret = array();
 
   $schema = config_perms_schema();
   db_create_table('config_perms', $schema['config_perms']);
+  
+  // Instal default data
   _config_perms_install_data();
-  cache_clear_all('config_perms', 'cache');
+  
+    // Rebuild menu and cache
+  config_perms_cache_rebuild();
+  menu_rebuild();
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('Update succesfull.');
 }
