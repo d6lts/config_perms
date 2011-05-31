@@ -159,8 +159,8 @@ function config_perms_admin_form_submit($form, &$form_state) {
   }
   
   // Rebuild menu and cache
-  menu_rebuild();
   config_perms_cache_rebuild();
+  menu_rebuild();
   
   drupal_set_message(t('The permissions have been saved.'));
 }
