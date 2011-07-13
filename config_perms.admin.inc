@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -9,20 +8,17 @@
 /**
  * Administration form
  */
-function config_perms_admin_form($form, &$form_state, $type = '') {
+function config_perms_admin_form($form, &$form_state) {
   $form['perms'] = array(
     '#type' => 'fieldset',
     '#title' => t('Custom Permissions'),
     '#description' => '<p>' . t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
       "<ul>" .
         "<li>" . t("User 1 still maintains full control") .
-       // "<li>" . t("Any role with 'administer site configuration' will have access to all permissions listed above") .
         "<li>" . t("Nothing will be available under Site building if 'display site building menu' is not checked") .
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") .
         "<li>" . t("You can use * as wildcard for paths.") .
-        //"<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .
       "</ul>",
-    //'<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
     '#collapsible' => 1,
     '#collapsed' => 0,
   );
@@ -59,12 +55,14 @@ function config_perms_admin_form($form, &$form_state, $type = '') {
       '#type' => 'textfield',
       '#default_value' => check_plain($perm->name),
       '#size' => 30,
+      //'#required' => TRUE,
     );
     $form['perms']['local'][$key]['path'] = array(
       '#type' => 'textarea',
       '#default_value' => config_perms_parse_path($perm->path),
       '#size' => 50,
       '#rows' => 1,
+      //'#required' => TRUE,
     );
   }
 
@@ -159,6 +157,12 @@ function config_perms_admin_form_validate($form, &$form_state) {
 
   foreach ($values['local'] as $key => $perm) {
     $perm = (object)$perm;
+    
+    if(empty($perm->name))
+      form_set_error("local][". $key ."", t("The name cannot be empty.")); 
+    
+    if(empty($perm->path))
+      form_set_error("local][". $key ."", t("The path cannot be empty."));
     
     if(array_key_exists(config_perms_generate_machine_name($perm->name), $perms) && !isset($perm->pid)) {
       form_set_error("local][". $key ."", t("A permission with that name already exists."));
