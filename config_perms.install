@@ -96,7 +96,6 @@ function _config_perms_install_data() {
     'administer performance' => array('admin/config/development/performance'),
     'administer site information' => array('admin/config/system/site-information'),
     'administer site maintenance' => array('admin/config/development/maintenance'),
-    'administer modules' => array('admin/modules', 'admin/modules/list/confirm', 'admin/modules/uninstall', 'admin/modules/uninstall/confirm'),
     'display site structure menu' => array('admin/structure'),
     'display site configuration menu' => array('admin/config'),
     'display site reports menu' => array('admin/reports'),
