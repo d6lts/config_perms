@@ -1,5 +1,5 @@
 name = Custom Permissions
-description = "Allows additional permissions to be created and managed through a administration form.
+description = "Allows additional permissions to be created and managed through an administration form.
 <br /><small>Machine name: config_perms</small>"
 core = 7.x
 package = Permissions
