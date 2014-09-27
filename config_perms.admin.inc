@@ -32,7 +32,7 @@ function config_perms_admin_form($form, &$form_state) {
     '#prefix' => '<div id="config_perms-wrapper">',
     '#suffix' => '</div>',
   );
-  
+
   foreach ($perms as $key => $perm) {
     $form['perms']['local'][$key] = array('#tree' => TRUE);
     $form['perms']['local'][$key]['pid'] = array(
@@ -91,7 +91,7 @@ function config_perms_admin_form($form, &$form_state) {
       '#size' => 50,
     );
   }
-  
+
   $form['perms']['add']['status'] = array(
     '#name' => 'status',
     '#id' => 'edit-local-status',
@@ -103,7 +103,7 @@ function config_perms_admin_form($form, &$form_state) {
       'wrapper' => 'config_perms-wrapper',
     ),
   );
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
@@ -157,13 +157,13 @@ function config_perms_admin_form_validate($form, &$form_state) {
 
   foreach ($values['local'] as $key => $perm) {
     $perm = (object)$perm;
-    
+
     if(empty($perm->name))
-      form_set_error("local][". $key ."", t("The name cannot be empty.")); 
-    
+      form_set_error("local][". $key ."", t("The name cannot be empty."));
+
     if(empty($perm->path))
       form_set_error("local][". $key ."", t("The path cannot be empty."));
-    
+
     if(array_key_exists(config_perms_generate_machine_name($perm->name), $perms) && !isset($perm->pid)) {
       form_set_error("local][". $key ."", t("A permission with that name already exists."));
     }
@@ -189,6 +189,6 @@ function config_perms_admin_form_submit($form, &$form_state) {
   // Rebuild menu and cache
   config_perms_cache_rebuild();
   menu_rebuild();
-  
+
   drupal_set_message(t('The permissions have been saved.'));
 }
