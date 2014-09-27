@@ -62,7 +62,7 @@ function config_perms_permission() {
 
   foreach ($perms as $perm) {
     if ($perm->status) {
-      $permissions[check_plain($perm->name)] = array('title' => check_plain($perm->name), 'description' => '');
+      $permissions[$perm->name] = array('title' => check_plain($perm->name), 'description' => '');
     }
   }
 
@@ -129,7 +129,7 @@ function config_perms_menu_alter(&$items) {
  * Access callback
  */
 function config_perms_access_callback($perm) {
-  return user_access(check_plain($perm->name));
+  return user_access($perm->name);
 }
 
 /*******************************************************************************

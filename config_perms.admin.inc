@@ -38,15 +38,15 @@ function config_perms_admin_form($form, &$form_state) {
     $form['perms']['local'][$key] = array('#tree' => TRUE);
     $form['perms']['local'][$key]['pid'] = array(
       '#type' => 'hidden',
-      '#default_value' => isset($perm->pid) ? check_plain($perm->pid) : NULL,
+      '#default_value' => isset($perm->pid) ? $perm->pid : NULL,
     );
     $form['perms']['local'][$key]['machine_name'] = array(
       '#type' => 'hidden',
-      '#default_value' => check_plain($perm->machine_name),
+      '#default_value' => $perm->machine_name,
     );
     $form['perms']['local'][$key]['status'] = array(
       '#type' => 'checkbox',
-      '#default_value' => check_plain($perm->status),
+      '#default_value' => $perm->status,
     );
     $form['perms']['local'][$key]['remove'] = array(
       '#type' => 'checkbox',
@@ -54,7 +54,7 @@ function config_perms_admin_form($form, &$form_state) {
     );
     $form['perms']['local'][$key]['name'] = array(
       '#type' => 'textfield',
-      '#default_value' => check_plain($perm->name),
+      '#default_value' => $perm->name,
       '#size' => 30,
       //'#required' => TRUE,
     );
@@ -74,7 +74,7 @@ function config_perms_admin_form($form, &$form_state) {
   for ($i = 0; $i < $form_state['num_new']; $i++) {
     $form['perms']['local'][$key + $i]['status'] = array(
       '#type' => 'checkbox',
-      '#default_value' => check_plain($perm->status),
+      '#default_value' => $perm->status,
     );
     $form['perms']['local'][$key + $i]['remove'] = array(
       '#type' => 'checkbox',

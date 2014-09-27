@@ -134,3 +134,90 @@ function config_perms_update_6200() {
 
   return t('Update succesfull.');
 }
+
+/**
+ * Fix permissions that were incorrectly stored with escaped HTML characters.
+ */
+function config_perms_update_7201() {
+  $config_perms = config_perms_perms();
+  $role_perms = user_role_permissions(user_roles());
+  $updates = array();
+
+  foreach ($config_perms as $config_perm) {
+    $derivatives = array();
+    $decoded_name = config_perms_unescape_perm_name($config_perm->name, $derivatives);
+    // Reverse the array and remove the end item, which is the new name.
+    $derivatives = array_reverse($derivatives);
+    array_unshift($derivatives);
+    if ($config_perm->name !== $decoded_name) {
+      // Fix the config perms config for this permission.
+      $updates[$config_perm->name] = $decoded_name;
+      $config_perm->name = $decoded_name;
+      $config_perm = config_perms_save($config_perm);
+      // Make sure to refresh the config perms cache, otherwise the system will
+      // think the new perm we are adding doesn't exist.
+      config_perms_cache_rebuild();
+      // Fix perms best as possible.
+      // It is possible that a config perm has had multiple names with different
+      // perms so we have to take just one.
+      // Possibly the newest perm is the most correct, however the newest one
+      // is also likely to have been checnged by accident. The oldest one would
+      // be the most likely to have been correctly configured by the admin so
+      // take the oldest one and then notify the admin to check the config.
+      // Don't take the one we just changed to though.
+      foreach ($role_perms as $rid => $perms) {
+        $new_perms = array();
+        foreach ($derivatives as $derivative) {
+          // If a permission is in the database for this derivative.
+          if (isset($perms[$derivative])) {
+            // Set the new value if we haven't already.
+            if (is_null($new_perm_value)) {
+              $new_perms[$decoded_name] = $perms[$derivative];
+            }
+            // Remove the old perm.
+            $new_perms[$derivative] = FALSE;
+          }
+        }
+        // Set a default if there isn't a value for the new perm.
+        if (!isset($new_perms[$decoded_name])) {
+          $new_perms[$decoded_name] = FALSE;
+        }
+        // Save the new config.
+        user_role_change_permissions($rid, $new_perms);
+      }
+    }
+  }
+
+  if ($updates) {
+    foreach ($updates as $old_name => $new_name) {
+      $updates_str = '<li>' . t('%old_name is now %new_name', array('%old_name' => $old_name, '%new_name' => $new_name)) . '</li>';
+    }
+
+    return format_plural(count($updates), '1 custom permission name was updated.', '@count custom permission names were updated.') . '<br />' .
+           t('User role permissions should have been transferred to the newly named custom permissions but please check your permissions manually to be sure.') . '<br />' .
+           t('The permission names that were updated are:') . '<ul>' . $updates_str . '</ul>';
+  }
+}
+
+/**
+ * Recursively decode HTML in the permission name becasue we don't know how
+ * many times it has been encoded.
+ *
+ * @param string $name
+ *   The permission name.
+ * @param array $derivitives
+ *   An array of derivative name for the permission name.
+ *
+ * @return string
+ *   The new permission name.
+ */
+function config_perms_unescape_perm_name($name, &$derivatives) {
+  $derivatives[] = $name;
+  $decoded_name = htmlspecialchars_decode($name, ENT_QUOTES);
+  if ($name != $decoded_name) {
+    return config_perms_unescape_perm_name($decoded_name, $derivatives);
+  }
+  else {
+    return $name;
+  }
+}
