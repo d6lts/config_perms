@@ -4,8 +4,4 @@ description = "Allows additional permissions to be created and managed through a
 core = 7.x
 package = Permissions
 
-files[] = config_perms.admin.inc
-files[] = config_perms.install
-files[] = config_perms.module
-
 configure = admin/people/custom_permissions
