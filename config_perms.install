@@ -11,7 +11,7 @@
 function config_perms_install() {
   // Install defaults
   _config_perms_install_data();
-  
+
   // Rebuild menu and cache
   config_perms_cache_rebuild();
   menu_rebuild();
@@ -125,10 +125,10 @@ function config_perms_update_6200() {
 
   $schema = config_perms_schema();
   db_create_table('config_perms', $schema['config_perms']);
-  
+
   // Instal default data
   _config_perms_install_data();
-  
+
     // Rebuild menu and cache
   config_perms_cache_rebuild();
   menu_rebuild();
