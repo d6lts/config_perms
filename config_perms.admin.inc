@@ -15,6 +15,7 @@ function config_perms_admin_form($form, &$form_state) {
     '#description' => '<p>' . t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
       "<ul>" .
         "<li>" . t("User 1 still maintains full control") . "</li>\n" .
+        "<li>" . t("Remove the permission 'Administer site configuration' from roles you wish to give access to only specified custom site configuration permissions") . "</li>\n" .
         "<li>" . t("Nothing will be available under Site building if 'display site building menu' is not checked") . "</li>\n" .
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") . "</li>\n" .
         "<li>" . t("You can use * as wildcard for paths.") .
