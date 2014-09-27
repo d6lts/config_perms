@@ -35,6 +35,10 @@ function config_perms_perms($machine_name = NULL, $rebuild = FALSE) {
  * Configure permission names for urls:
  */
 function config_perms_cache_rebuild() {
+  if (module_exists('ctools')) {
+    ctools_include('export');
+    ctools_export_load_object_reset('config_perms');
+  }
   $perms = config_perms_loadperms();
   cache_set('config_perms', $perms);
   
