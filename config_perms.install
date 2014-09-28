@@ -102,8 +102,6 @@ function _config_perms_install_data() {
   );
 
   foreach ($perms as $name => $paths) {
-    // TODO Please review the conversion of this statement to the D7 database API syntax.
-    /* db_query("INSERT INTO {config_perms} (machine_name, status, name, path) VALUES ('%s', %d, '%s', %b)", strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $name)), 1, $name, serialize($paths)) */
     $id = db_insert('config_perms')
   ->fields(array(
       'machine_name' => strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $name)),
