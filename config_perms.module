@@ -184,7 +184,7 @@ function config_perms_save($perm) {
 }
 
 /**
- * Peristant permissions
+ * Persistent permissions.
  */
 function config_perms_persistant() {
   $persistant = array(
