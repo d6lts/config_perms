@@ -89,6 +89,7 @@ function config_perms_schema() {
 
 function _config_perms_install_data() {
   $perms = array(
+    'administer account settings' => array('admin/config/people/accounts'),
     'administer clean-urls' => array('admin/config/search/clean-urls'),
     'administer date-time' => array('admin/config/regional/date-time', 'admin/config/regional/date-time/*'),
     'administer error reporting' => array('admin/config/error-reporting'),
@@ -174,6 +175,19 @@ function config_perms_update_7201() {
     return format_plural(count($updates), '1 custom permission name was updated.', '@count custom permission names were updated.') . '<br />' .
            t('User role permissions should have been transferred to the newly named custom permissions but please check your permissions manually to be sure.') . '<br />' .
            t('The permission names that were updated are:') . '<ul>' . $updates_str . '</ul>';
+  }
+}
+
+/**
+ * Add the administer account settings permission.
+ */
+function config_perms_update_7202() {
+  if (!array_key_exists('administer account settings', config_perms_perms())) {
+    config_perms_save(array(
+      'name' => 'administer account settings',
+      'path' => array('admin/config/people/accounts'),
+      'status' => 1,
+    ));
   }
 }
 
