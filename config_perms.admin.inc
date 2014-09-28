@@ -159,6 +159,11 @@ function config_perms_admin_form_validate($form, &$form_state) {
   foreach ($values['local'] as $key => $perm) {
     $perm = (object)$perm;
 
+    if (empty($perm->name) && empty($perm->path)) {
+      unset($form_state['values']['local'][$key]);
+      continue;
+    }
+
     if (empty($perm->name))
       form_set_error("local][". $key ."", t("The name cannot be empty."));
 
