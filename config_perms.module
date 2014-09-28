@@ -41,7 +41,7 @@ function config_perms_cache_rebuild() {
   }
   $perms = config_perms_loadperms();
   cache_set('config_perms', $perms);
-  
+
   return $perms;
 }
 
@@ -111,7 +111,7 @@ function config_perms_menu() {
 /**
  * Implements hook_menu_alter().
  */
-function config_perms_menu_alter(&$items) {  
+function config_perms_menu_alter(&$items) {
   // Run through all menu items and leter them accordingly
   foreach($items as $key => $item) {
     foreach (config_perms_perms() as $perm) {
@@ -179,7 +179,7 @@ function config_perms_save($perm) {
   else {
     drupal_write_record('config_perms', $perm);
   }
-  
+
   return $perm;
 }
 
