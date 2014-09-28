@@ -135,7 +135,7 @@ function theme_config_perms_form($variables) {
 }
 
 /**
- * Submit for add button
+ * Submit for add button.
  */
 function config_perms_admin_form_add_submit($form, &$form_state) {
   $form_state['num_new']++;
@@ -143,14 +143,14 @@ function config_perms_admin_form_add_submit($form, &$form_state) {
 }
 
 /**
- * Callback for add button
+ * Callback for add button.
  */
 function config_perms_admin_form_add_callback($form, $form_state) {
   return $form['perms']['local'];
 }
 
 /**
- * Validate handler
+ * Validate handler.
  */
 function config_perms_admin_form_validate($form, &$form_state) {
   $values = $form_state['values'];
@@ -159,13 +159,13 @@ function config_perms_admin_form_validate($form, &$form_state) {
   foreach ($values['local'] as $key => $perm) {
     $perm = (object)$perm;
 
-    if(empty($perm->name))
+    if (empty($perm->name))
       form_set_error("local][". $key ."", t("The name cannot be empty."));
 
-    if(empty($perm->path))
+    if (empty($perm->path))
       form_set_error("local][". $key ."", t("The path cannot be empty."));
 
-    if(array_key_exists(config_perms_generate_machine_name($perm->name), $perms) && !isset($perm->pid)) {
+    if (array_key_exists(config_perms_generate_machine_name($perm->name), $perms) && !isset($perm->pid)) {
       form_set_error("local][". $key ."", t("A permission with that name already exists."));
     }
   }
