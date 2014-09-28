@@ -184,30 +184,6 @@ function config_perms_save($perm) {
 }
 
 /**
- * Persistent permissions.
- */
-function config_perms_persistant() {
-  $persistant = array(
-    array(
-      'name' => 'administer themes',
-      'status' => 1,
-      'paths' => array(),
-    ),
-    array(
-      'name' => 'administer enabled themes',
-      'status' => 1,
-      'paths' => array(),
-    ),
-  );
-
-  foreach ($persistant as $p) {
-    $perms[config_perms_generate_machine_name($p['name'])] = (object) $p;
-  }
-
-  return $perms;
-}
-
-/**
  * Delete a perm.
  *
  * @param $name
