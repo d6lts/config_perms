@@ -114,26 +114,6 @@ function _config_perms_install_data() {
 }
 
 /**
- * Update
- * Should we still have this function in 7.x?
- */
-function config_perms_update_6200() {
-  $ret = array();
-
-  $schema = config_perms_schema();
-  db_create_table('config_perms', $schema['config_perms']);
-
-  // Instal default data
-  _config_perms_install_data();
-
-    // Rebuild menu and cache
-  config_perms_cache_rebuild();
-  menu_rebuild();
-
-  return t('Update succesfull.');
-}
-
-/**
  * Fix permissions that were incorrectly stored with escaped HTML characters.
  */
 function config_perms_update_7201() {
