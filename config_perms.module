@@ -115,7 +115,7 @@ function config_perms_menu_alter(&$items) {
   // Run through all menu items and leter them accordingly
   foreach($items as $key => $item) {
     foreach (config_perms_perms() as $perm) {
-      foreach ($perm->path as $path) { 
+      foreach ($perm->path as $path) {
         if (drupal_match_path($key, $path) && $perm->status) {
           $items[$key]['access callback'] = 'config_perms_access_callback';
           $items[$key]['access arguments'] = array($perm);
