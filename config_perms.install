@@ -104,7 +104,7 @@ function _config_perms_install_data() {
   foreach ($perms as $name => $paths) {
     $id = db_insert('config_perms')
   ->fields(array(
-      'machine_name' => strtolower(preg_replace('/[^a-zA-Z0-9_]+/', '_', $name)),
+      'machine_name' => config_perms_generate_machine_name($name),
       'status' => 1,
       'name' => $name,
       'path' => serialize($paths),
