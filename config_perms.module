@@ -48,11 +48,9 @@ function config_perms_cache_rebuild() {
 /*******************************************************************************
  * Hook Functions
  ******************************************************************************/
-/*
 
- /**
- * Implementation of hook_perm
- * Administer -> User management -> Permissions
+/**
+ * Implements hook_permission().
  */
 function config_perms_permission() {
   $permissions = array();
