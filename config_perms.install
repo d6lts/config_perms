@@ -127,7 +127,7 @@ function config_perms_update_7201() {
     $decoded_name = config_perms_unescape_perm_name($config_perm->name, $derivatives);
     // Reverse the array and remove the end item, which is the new name.
     $derivatives = array_reverse($derivatives);
-    array_unshift($derivatives);
+    array_shift($derivatives);
     if ($config_perm->name !== $decoded_name) {
       // Fix the config perms config for this permission.
       $updates[$config_perm->name] = $decoded_name;
