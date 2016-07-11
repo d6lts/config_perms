@@ -10,12 +10,12 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 interface CustomPermsEntityInterface extends ConfigEntityInterface {
 
   /**
-   *
+   * Get the permission status.
    */
   public function getStatus();
 
   /**
-   *
+   * Get the permission paths.
    */
   public function getPath();
 

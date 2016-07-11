@@ -22,14 +22,16 @@ class RouteSubscriber extends RouteSubscriberBase {
   protected function alterRoutes(RouteCollection $collection) {
     $custom_perms = CustomPermsEntity::loadMultiple();
     foreach ($custom_perms as $custom_perm) {
-      $paths = $this->configPermsParsePath($custom_perm->getPath());
-      foreach ($paths as $path) {
-        $path = ($path[0] == '/') ? $path : '/' . $path;
-        $url_object = Url::fromUri('internal:' . $path);
-        if ($url_object) {
-          $route_name = $url_object->getRouteName();
-          if ($route = $collection->get($route_name)) {
-            $route->setRequirement('_permission', $custom_perm->label());
+      if ($custom_perm->getStatus()) {
+        $paths = $this->configPermsParsePath($custom_perm->getPath());
+        foreach ($paths as $path) {
+          $path = ($path[0] == '/') ? $path : '/' . $path;
+          $url_object = Url::fromUri('internal:' . $path);
+          if ($url_object) {
+            $route_name = $url_object->getRouteName();
+            if ($route = $collection->get($route_name)) {
+              $route->setRequirement('_permission', $custom_perm->label());
+            }
           }
         }
       }

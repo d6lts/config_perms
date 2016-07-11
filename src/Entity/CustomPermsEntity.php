@@ -65,14 +65,14 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
   protected $path;
 
   /**
-   *
+   * Get the permission status.
    */
   public function getStatus() {
     return $this->status;
   }
 
   /**
-   *
+   * Get the permission paths.
    */
   public function getPath() {
     return $this->path;

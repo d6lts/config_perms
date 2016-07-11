@@ -42,11 +42,12 @@ class CustomPermissions implements ContainerInjectionInterface {
    * Returns an array of filter permissions.
    *
    * @return array
+   *    Return a table of permissions
    */
   public function permissions() {
     $permissions = [];
-    // Generate permissions for each text format. Warn the administrator that any
-    // of them are potentially unsafe.
+    // Generate permissions for each text format. Warn the administrator that
+    // any of them are potentially unsafe.
     /** @var \Drupal\filter\FilterFormatInterface[] $formats */
     $custom_perms = $this->entityManager->getStorage('custom_perms_entity')->loadByProperties(['status' => TRUE]);
     uasort($custom_perms, 'Drupal\Core\Config\Entity\ConfigEntityBase::sort');
