@@ -32,6 +32,7 @@ class ConfigPermListForm extends FormBase {
       '#title' => $this->t('Custom Permissions'),
       '#description' => '<p>' . $this->t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
       "<ul>
+       <li>" . $this->t("Custom permissions only support internal paths") . "</li>\n
        <li>" . $this->t("User 1 still maintains full control") . "</li>\n
        <li>" . $this->t("Remove the permission 'Administer site configuration' from roles you wish to give access to only specified custom site configuration permissions") . "</li>\n
       </ul>",
