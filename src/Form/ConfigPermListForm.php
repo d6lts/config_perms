@@ -114,7 +114,7 @@ class ConfigPermListForm extends FormBase {
       '#name' => 'status',
       '#id' => 'edit-local-status',
       '#type' => 'submit',
-      '#value' => t('Add permission'),
+      '#value' => $this->t('Add permission'),
       '#submit' => array('::configPermsAdminFormAddSubmit'),
       '#ajax' => array(
         'callback' => '::configPermsAdminFormAddCallback',
@@ -124,7 +124,7 @@ class ConfigPermListForm extends FormBase {
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Save'),
+      '#value' => $this->t('Save'),
     );
 
     return $form;
