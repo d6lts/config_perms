@@ -6,7 +6,6 @@ namespace Drupal\config_perms\Routing;
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Symfony\Component\Routing\RouteCollection;
 use Drupal\config_perms\Entity\CustomPermsEntity;
-use Drupal\Core\Url;
 
 /**
  * Class RouteSubscriber.
@@ -26,7 +25,7 @@ class RouteSubscriber extends RouteSubscriberBase {
         $paths = $this->configPermsParsePath($custom_perm->getPath());
         foreach ($paths as $path) {
           $path = ($path[0] == '/') ? $path : '/' . $path;
-          $url_object = Url::fromUri('internal:' . $path);
+          $url_object = \Drupal::service('path.validator')->getUrlIfValid($path);
           if ($url_object) {
             $route_name = $url_object->getRouteName();
             if ($route = $collection->get($route_name)) {
