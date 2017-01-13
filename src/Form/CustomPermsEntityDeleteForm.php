@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\config_perms\Form;
 
 use Drupal\Core\Entity\EntityConfirmFormBase;

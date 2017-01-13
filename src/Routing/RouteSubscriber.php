@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\config_perms\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;

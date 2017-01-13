@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\config_perms\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
@@ -53,7 +52,7 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
   /**
    * The Custom perms entity ID.
    *
-   * @var boolean
+   * @var bool
    */
   protected $status;
 
