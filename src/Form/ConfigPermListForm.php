@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Drupal\config_perms\Form;
 
 use Drupal\Core\Form\FormBase;
@@ -214,7 +213,7 @@ class ConfigPermListForm extends FormBase {
     }
 
     \Drupal::service('router.builder')->rebuild();
-    drupal_set_message(t('The permissions have been saved.'));
+    drupal_set_message($this->t('The permissions have been saved.'));
   }
 
   /**
