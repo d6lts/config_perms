@@ -24,7 +24,7 @@ class RouteSubscriber extends RouteSubscriberBase {
         $paths = $this->configPermsParsePath($custom_perm->getPath());
         foreach ($paths as $path) {
           $path = ($path[0] == '/') ? $path : '/' . $path;
-          $url_object = \Drupal::service('path.validator')->getUrlIfValid($path);
+          $url_object = \Drupal::service('path.validator')->getUrlIfValidWithoutAccessCheck($path);
           if ($url_object) {
             $route_name = $url_object->getRouteName();
             if ($route = $collection->get($route_name)) {
