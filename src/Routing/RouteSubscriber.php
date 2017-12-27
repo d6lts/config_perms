@@ -24,11 +24,12 @@ class RouteSubscriber extends RouteSubscriberBase {
         $paths = $this->configPermsParsePath($custom_perm->getPath());
         foreach ($paths as $path) {
           $path = ($path[0] == '/') ? $path : '/' . $path;
+          /** @var \Drupal\Core\Url $url_object */
           $url_object = \Drupal::service('path.validator')->getUrlIfValidWithoutAccessCheck($path);
           if ($url_object) {
             $route_name = $url_object->getRouteName();
             if ($route = $collection->get($route_name)) {
-              $route->setRequirement('_permission', $custom_perm->label());
+              $route->setRequirement('_config_perms_access_check', 'TRUE');
             }
           }
         }
