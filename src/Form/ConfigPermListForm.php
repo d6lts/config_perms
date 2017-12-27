@@ -26,7 +26,7 @@ class ConfigPermListForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['perms'] = array(
+    $form['perms'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Custom Permissions'),
       '#description' => '<p>' . $this->t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
@@ -37,52 +37,52 @@ class ConfigPermListForm extends FormBase {
       </ul>",
       '#collapsible' => 1,
       '#collapsed' => 0,
-    );
+    ];
 
     $perms = CustomPermsEntity::loadMultiple();
 
-    $header = array($this->t('Enabled'), $this->t('Name'), $this->t('Path(s)'));
+    $header = [$this->t('Enabled'), $this->t('Name'), $this->t('Path(s)')];
 
-    $form['perms']['local'] = array(
+    $form['perms']['local'] = [
       '#type' => 'table',
       '#header' => $header,
       '#prefix' => '<div id="config_perms-wrapper">',
       '#suffix' => '</div>',
-    );
+    ];
 
     foreach ($perms as $key => $perm) {
 
-      $form['perms']['local'][$key] = array('#tree' => TRUE);
+      $form['perms']['local'][$key] = ['#tree' => TRUE];
 
-      $form['perms']['local'][$key]['status'] = array(
+      $form['perms']['local'][$key]['status'] = [
         '#type' => 'checkbox',
         '#default_value' => $perm->status(),
-      );
+      ];
 
-      $form['perms']['local'][$key]['name'] = array(
+      $form['perms']['local'][$key]['name'] = [
         '#type' => 'textfield',
         '#default_value' => $perm->label(),
         '#size' => 30,
-      );
+      ];
 
-      $form['perms']['local'][$key]['path'] = array(
+      $form['perms']['local'][$key]['path'] = [
         '#type' => 'textarea',
         '#default_value' => $perm->getPath(),
         '#size' => 50,
         '#rows' => 1,
-      );
+      ];
 
       // Delete link.
       $url_object = Url::fromUri('internal:/admin/structure/custom_perms_entity/' . $perm->id() . '/delete');
       $delete_link = \Drupal::l($this->t('Delete'), $url_object);
-      $form['perms']['local'][$key]['delete'] = array(
+      $form['perms']['local'][$key]['delete'] = [
         '#type' => 'item',
         '#markup' => $delete_link,
-      );
-      $form['perms']['local'][$key]['id'] = array(
+      ];
+      $form['perms']['local'][$key]['id'] = [
         '#type' => 'hidden',
         '#default_value' => $perm->id(),
-      );
+      ];
     }
 
     $num_new = $form_state->getValue('num_new');
@@ -91,41 +91,41 @@ class ConfigPermListForm extends FormBase {
     }
 
     for ($i = 0; $i < $form_state->getValue('num_new'); $i++) {
-      $form['perms']['local']['new']['status'] = array(
+      $form['perms']['local']['new']['status'] = [
         '#type' => 'checkbox',
         '#default_value' => '',
-      );
-      $form['perms']['local']['new']['name'] = array(
+      ];
+      $form['perms']['local']['new']['name'] = [
         '#type' => 'textfield',
         '#default_value' => '',
         '#size' => 30,
-      );
+      ];
 
-      $form['perms']['local']['new']['path'] = array(
+      $form['perms']['local']['new']['path'] = [
         '#type' => 'textarea',
         '#default_value' => '',
         '#rows' => 2,
         '#size' => 50,
-      );
+      ];
 
     }
 
-    $form['perms']['add']['status'] = array(
+    $form['perms']['add']['status'] = [
       '#name' => 'status',
       '#id' => 'edit-local-status',
       '#type' => 'submit',
       '#value' => $this->t('Add permission'),
-      '#submit' => array('::configPermsAdminFormAddSubmit'),
-      '#ajax' => array(
+      '#submit' => ['::configPermsAdminFormAddSubmit'],
+      '#ajax' => [
         'callback' => '::configPermsAdminFormAddCallback',
         'wrapper' => 'config_perms-wrapper',
-      ),
-    );
+      ],
+    ];
 
-    $form['submit'] = array(
+    $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save'),
-    );
+    ];
 
     return $form;
   }
@@ -175,7 +175,7 @@ class ConfigPermListForm extends FormBase {
             $url_object = \Drupal::service('path.validator')
               ->getUrlIfValid($path);
             if (!$url_object) {
-              $form_state->setErrorByName("local][" . $key . "", $this->t("The path @path is invalid.", array('@path' => $path)));
+              $form_state->setErrorByName("local][" . $key . "", $this->t("The path @path is invalid.", ['@path' => $path]));
             }
           }
         }
@@ -231,7 +231,7 @@ class ConfigPermListForm extends FormBase {
       return $string;
     }
     else {
-      $path = str_replace(array("\r\n", "\n\r", "\n", "\r"), "\n", $path);
+      $path = str_replace(["\r\n", "\n\r", "\n", "\r"], "\n", $path);
       $parts = explode("\n", $path);
       return $parts;
     }

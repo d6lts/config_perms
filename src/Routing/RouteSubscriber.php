@@ -51,7 +51,7 @@ class RouteSubscriber extends RouteSubscriberBase {
       return $string;
     }
     else {
-      $path = str_replace(array("\r\n", "\n\r", "\n", "\r"), "\n", $path);
+      $path = str_replace(["\r\n", "\n\r", "\n", "\r"], "\n", $path);
       $parts = explode("\n", $path);
       return $parts;
     }

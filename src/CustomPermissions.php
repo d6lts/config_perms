@@ -42,7 +42,7 @@ class CustomPermissions implements ContainerInjectionInterface {
    * Returns an array of filter permissions.
    *
    * @return array
-   *    Return a table of permissions
+   *   Return a table of permissions
    */
   public function permissions() {
     $permissions = [];
