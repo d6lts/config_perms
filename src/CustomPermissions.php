@@ -3,7 +3,7 @@
 namespace Drupal\config_perms;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -17,25 +17,25 @@ class CustomPermissions implements ContainerInjectionInterface {
   /**
    * The entity manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * Constructs a new FilterPermissions instance.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity manager.
    */
-  public function __construct(EntityManagerInterface $entity_manager) {
-    $this->entityManager = $entity_manager;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('entity.manager'));
+    return new static($container->get('entity_type.manager'));
   }
 
   /**
@@ -49,7 +49,7 @@ class CustomPermissions implements ContainerInjectionInterface {
     // Generate permissions for each text format. Warn the administrator that
     // any of them are potentially unsafe.
     /** @var \Drupal\filter\FilterFormatInterface[] $formats */
-    $custom_perms = $this->entityManager->getStorage('custom_perms_entity')->loadByProperties(['status' => TRUE]);
+    $custom_perms = $this->entityTypeManager->getStorage('custom_perms_entity')->loadByProperties(['status' => TRUE]);
     uasort($custom_perms, 'Drupal\Core\Config\Entity\ConfigEntityBase::sort');
     foreach ($custom_perms as $custom_perm) {
       if ($permission = $custom_perm->label()) {
