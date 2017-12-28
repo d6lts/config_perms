@@ -12,10 +12,7 @@ use Drupal\config_perms\CustomPermsEntityInterface;
  *   id = "custom_perms_entity",
  *   label = @Translation("Custom perms entity"),
  *   handlers = {
- *     "list_builder" = "Drupal\config_perms\CustomPermsEntityListBuilder",
  *     "form" = {
- *       "add" = "Drupal\config_perms\Form\CustomPermsEntityForm",
- *       "edit" = "Drupal\config_perms\Form\CustomPermsEntityForm",
  *       "delete" = "Drupal\config_perms\Form\CustomPermsEntityDeleteForm"
  *     }
  *   },
@@ -27,10 +24,7 @@ use Drupal\config_perms\CustomPermsEntityInterface;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/custom_perms_entity/{custom_perms_entity}",
- *     "edit-form" = "/admin/structure/custom_perms_entity/{custom_perms_entity}/edit",
  *     "delete-form" = "/admin/structure/custom_perms_entity/{custom_perms_entity}/delete",
- *     "collection" = "/admin/structure/visibility_group"
  *   }
  * )
  */
