@@ -187,7 +187,7 @@ class ConfigPermListForm extends FormBase {
           $paths = $this->configPermsParsePath($perm['path']);
           foreach ($paths as $path) {
             $url_object = \Drupal::service('path.validator')
-              ->getUrlIfValid($path);
+              ->getUrlIfValidWithoutAccessCheck($path);
             if (!$url_object) {
               $form_state->setErrorByName("local][" . $key . "", $this->t("The path @path is invalid.", ['@path' => $path]));
             }
