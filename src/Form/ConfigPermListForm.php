@@ -34,6 +34,7 @@ class ConfigPermListForm extends FormBase {
        <li>" . $this->t("Custom permissions only support internal paths") . "</li>\n
        <li>" . $this->t("User 1 still maintains full control") . "</li>\n
        <li>" . $this->t("Remove the permission 'Administer site configuration' from roles you wish to give access to only specified custom site configuration permissions") . "</li>\n
+       <li>" . $this->t('If you select override any access restricted by any other permission will be ignored, use this with caution.') . "</li>\n
       </ul>",
       '#collapsible' => 1,
       '#collapsed' => 0,
@@ -41,7 +42,14 @@ class ConfigPermListForm extends FormBase {
 
     $perms = CustomPermsEntity::loadMultiple();
 
-    $header = [$this->t('Enabled'), $this->t('Name'), $this->t('Path(s)')];
+    $header = [
+      $this->t('Enabled'),
+      $this->t('Name'),
+      $this->t('Path(s)'),
+      $this->t('Override'),
+      '',
+      '',
+    ];
 
     $form['perms']['local'] = [
       '#type' => 'table',
@@ -50,6 +58,7 @@ class ConfigPermListForm extends FormBase {
       '#suffix' => '</div>',
     ];
 
+    /** @var \Drupal\config_perms\Entity\CustomPermsEntity $perm */
     foreach ($perms as $key => $perm) {
 
       $form['perms']['local'][$key] = ['#tree' => TRUE];
@@ -70,6 +79,11 @@ class ConfigPermListForm extends FormBase {
         '#default_value' => $perm->getPath(),
         '#size' => 50,
         '#rows' => 1,
+      ];
+
+      $form['perms']['local'][$key]['override'] = [
+        '#type' => 'checkbox',
+        '#default_value' => $perm->getOverride(),
       ];
 
       // Delete link.
@@ -207,6 +221,7 @@ class ConfigPermListForm extends FormBase {
           $entity->set('label', $data['name']);
           $entity->set('path', $data['path']);
           $entity->set('status', $data['status']);
+          $entity->set('override', $data['override']);
           $entity->save();
         }
       }
