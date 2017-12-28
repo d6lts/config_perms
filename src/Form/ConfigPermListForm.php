@@ -122,6 +122,11 @@ class ConfigPermListForm extends FormBase {
         '#size' => 50,
       ];
 
+      $form['perms']['local']['new']['override'] = [
+        '#type' => 'checkbox',
+        '#default_value' => '',
+      ];
+
     }
 
     $form['perms']['add']['status'] = [
@@ -212,6 +217,7 @@ class ConfigPermListForm extends FormBase {
         $entity->set('label', $data['name']);
         $entity->set('path', $data['path']);
         $entity->set('status', $data['status']);
+        $entity->set('override', $data['override']);
         $entity->save();
       }
       else {
