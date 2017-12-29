@@ -47,7 +47,6 @@ class ConfigPermsAccessCheck implements AccessInterface {
     $custom_perms_storage = $this->entityTypeManager->getStorage('custom_perms_entity');
     $params = [
       'status' => TRUE,
-      'route' => $routeMatch->getRouteName(),
     ];
     $custom_perms = $custom_perms_storage->loadByProperties($params);
     $access_result = AccessResult::forbidden();
@@ -56,7 +55,13 @@ class ConfigPermsAccessCheck implements AccessInterface {
     if (empty($custom_perms)) {
       return $access_result;
     }
+    /** @var \Drupal\config_perms\Entity\CustomPermsEntity $custom_perm */
     foreach ($custom_perms as $custom_perm) {
+      $routes = config_perms_parse_path($custom_perm->getRoute());
+      if (!in_array($routeMatch->getRouteName(), $routes)) {
+        continue;
+      }
+
       $access_result = AccessResult::allowedIf($account->hasPermission($custom_perm->label()));
     }
 

@@ -203,8 +203,11 @@ class ConfigPermListForm extends FormBase {
           $form_state->setErrorByName("local][" . $key . "", $this->t("A permission with that name already exists."));
         }
         if (!empty($perm['route'])) {
-          if (count($this->routerProvider->getRoutesByNames([$perm['route']])) < 1) {
-            $form_state->setErrorByName("local][" . $key . "", $this->t("The route @route is invalid.", ['@route' => $perm['route']]));
+          $routes = config_perms_parse_path($perm['route']);
+          foreach ($routes as $route) {
+            if (count($this->routerProvider->getRoutesByNames([$route])) < 1) {
+              $form_state->setErrorByName("local][" . $key . "", $this->t("The route @route is invalid.", ['@route' => $perm['route']]));
+            }
           }
         }
       }

@@ -22,3 +22,24 @@ function config_perms_help($route_name, RouteMatchInterface $route_match) {
     default:
   }
 }
+
+/**
+ * Custom permission paths to array of paths.
+ *
+ * @param string $route
+ *   Path(s) given by the user.
+ *
+ * @return array|string
+ *   Implode paths in array of strings.
+ */
+function config_perms_parse_path($route) {
+  if (is_array($route)) {
+    $string = implode("\n", $route);
+    return $string;
+  }
+  else {
+    $route = str_replace(["\r\n", "\n\r", "\n", "\r"], "\n", $route);
+    $parts = explode("\n", $route);
+    return $parts;
+  }
+}

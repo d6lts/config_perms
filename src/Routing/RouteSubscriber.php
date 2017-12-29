@@ -22,11 +22,13 @@ class RouteSubscriber extends RouteSubscriberBase {
     /** @var \Drupal\config_perms\Entity\CustomPermsEntity $custom_perm */
     foreach ($custom_perms as $custom_perm) {
       if ($custom_perm->getStatus()) {
-        if ($route = $collection->get($custom_perm->getRoute())) {
-
-          // This overrides the route requirements removing all the other
-          // access checkers and leaving only our access checker.
-          $route->setRequirements(['_config_perms_access_check' => 'TRUE']);
+        $routes = config_perms_parse_path($custom_perm->getRoute());
+        foreach ($routes as $route) {
+          if ($route = $collection->get($route)) {
+            // This overrides the route requirements removing all the other
+            // access checkers and leaving only our access checker.
+            $route->setRequirements(['_config_perms_access_check' => 'TRUE']);
+          }
         }
       }
     }
