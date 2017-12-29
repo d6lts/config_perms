@@ -31,10 +31,9 @@ class ConfigPermListForm extends FormBase {
       '#title' => $this->t('Custom Permissions'),
       '#description' => '<p>' . $this->t("Please note that the order in which permissions are granted are as follows:") . '</p>' .
       "<ul>
-       <li>" . $this->t("Custom permissions only support internal paths") . "</li>\n
+       <li>" . $this->t("Custom permissions only support routes") . "</li>\n
        <li>" . $this->t("User 1 still maintains full control") . "</li>\n
        <li>" . $this->t("Remove the permission 'Administer site configuration' from roles you wish to give access to only specified custom site configuration permissions") . "</li>\n
-       <li>" . $this->t('If you select override any access restricted by any other permission will be ignored, use this with caution.') . "</li>\n
       </ul>",
       '#collapsible' => 1,
       '#collapsed' => 0,
@@ -45,8 +44,7 @@ class ConfigPermListForm extends FormBase {
     $header = [
       $this->t('Enabled'),
       $this->t('Name'),
-      $this->t('Path(s)'),
-      $this->t('Override'),
+      $this->t('Route(s)'),
       '',
       '',
     ];
@@ -79,11 +77,6 @@ class ConfigPermListForm extends FormBase {
         '#default_value' => $perm->getPath(),
         '#size' => 50,
         '#rows' => 1,
-      ];
-
-      $form['perms']['local'][$key]['override'] = [
-        '#type' => 'checkbox',
-        '#default_value' => $perm->getOverride(),
       ];
 
       // Delete link.
@@ -120,11 +113,6 @@ class ConfigPermListForm extends FormBase {
         '#default_value' => '',
         '#rows' => 2,
         '#size' => 50,
-      ];
-
-      $form['perms']['local']['new']['override'] = [
-        '#type' => 'checkbox',
-        '#default_value' => '',
       ];
 
     }
@@ -217,7 +205,6 @@ class ConfigPermListForm extends FormBase {
         $entity->set('label', $data['name']);
         $entity->set('path', $data['path']);
         $entity->set('status', $data['status']);
-        $entity->set('override', $data['override']);
         $entity->save();
       }
       else {
@@ -227,7 +214,6 @@ class ConfigPermListForm extends FormBase {
           $entity->set('label', $data['name']);
           $entity->set('path', $data['path']);
           $entity->set('status', $data['status']);
-          $entity->set('override', $data['override']);
           $entity->save();
         }
       }

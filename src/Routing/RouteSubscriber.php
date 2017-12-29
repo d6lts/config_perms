@@ -29,17 +29,9 @@ class RouteSubscriber extends RouteSubscriberBase {
           if ($url_object) {
             $route_name = $url_object->getRouteName();
             if ($route = $collection->get($route_name)) {
-              if ($custom_perm->getOverride()) {
-                // This overwrite the route requirements removing all the other
-                // access checkers and leaving only our custom access checker.
-                $route->setRequirements(['_config_perms_access_check' => 'TRUE']);
-              }
-              else {
-                // This just adds an extra access_checker leaving the rest, so
-                // even if our checker returns `allowed` that doesn't guarantee
-                // that the user will have access.
-                $route->setRequirement('_config_perms_access_check', 'TRUE');
-              }
+              // This overwrite the route requirements removing all the other
+              // access checkers and leaving only our custom access checker.
+              $route->setRequirements(['_config_perms_access_check' => 'TRUE']);
             }
           }
         }

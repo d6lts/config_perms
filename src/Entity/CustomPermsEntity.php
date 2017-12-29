@@ -58,13 +58,6 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
   protected $path;
 
   /**
-   * If true all the other access checkers will be ignored.
-   *
-   * @var bool
-   */
-  protected $override;
-
-  /**
    * Get the permission status.
    */
   public function getStatus() {
@@ -76,13 +69,6 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
    */
   public function getPath() {
     return $this->path;
-  }
-
-  /**
-   * Get override.
-   */
-  public function getOverride() {
-    return $this->override;
   }
 
 }

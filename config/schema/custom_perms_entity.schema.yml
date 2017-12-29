@@ -11,9 +11,6 @@ config_perms.custom_perms_entity.*:
     path:
       type: string
       label: 'path'
-    override:
-      type: bool
-      label: 'Override other access checkers'
     status:
       type: boolean
       label: 'status'
