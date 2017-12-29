@@ -55,7 +55,7 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
    *
    * @var string
    */
-  protected $path;
+  protected $route;
 
   /**
    * Get the permission status.
@@ -65,10 +65,10 @@ class CustomPermsEntity extends ConfigEntityBase implements CustomPermsEntityInt
   }
 
   /**
-   * Get the permission paths.
+   * Get the permission routes.
    */
-  public function getPath() {
-    return $this->path;
+  public function getRoute() {
+    return $this->route;
   }
 
 }

@@ -5,6 +5,7 @@ namespace Drupal\config_perms\Access;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
+use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -36,40 +37,25 @@ class ConfigPermsAccessCheck implements AccessInterface {
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
+   * @param \Drupal\Core\Routing\RouteMatch $routeMatch
+   *   The routeMatch object.
    *
    * @return \Drupal\Core\Access\AccessResult
-   *   Determine if the user is allowed to access the path.
+   *   Determine if the user is allowed to access the route.
    */
-  public function access(AccountInterface $account) {
-    // @todo Get the request from the method signature once this is fixed
-    // https://www.drupal.org/project/drupal/issues/2786941
-    $request = \Drupal::request();
-    $path = $request->getPathInfo();
-
+  public function access(AccountInterface $account, RouteMatch $routeMatch) {
     $custom_perms_storage = $this->entityTypeManager->getStorage('custom_perms_entity');
     $params = [
       'status' => TRUE,
-      'path' => $path,
+      'route' => $routeMatch->getRouteName(),
     ];
     $custom_perms = $custom_perms_storage->loadByProperties($params);
-    // Sometimes the path is saved without the first slash so let's try again
-    // without the initial slash.
-    if (empty($custom_perms)) {
-      $params['path'] = substr($params['path'], 1);
-      $custom_perms = $custom_perms_storage->loadByProperties($params);
-    }
+    $access_result = AccessResult::forbidden();
 
-    $access_result = AccessResult::allowed();
-
-    // If it is still empty, then the URL is different and we don't have any
-    // reason to block the access, so let's return allowed.
-    // (There are other access checkers which still could block the access, so
-    // even returning allowed here doesn't means that the user will be able to
-    // access).
+    // If for for some reason there is not a custom_perm then return forbidden.
     if (empty($custom_perms)) {
       return $access_result;
     }
-
     foreach ($custom_perms as $custom_perm) {
       $access_result = AccessResult::allowedIf($account->hasPermission($custom_perm->label()));
     }

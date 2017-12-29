@@ -8,9 +8,9 @@ config_perms.custom_perms_entity.*:
     label:
       type: label
       label: 'Label'
-    path:
+    route:
       type: string
-      label: 'path'
+      label: 'route'
     status:
       type: boolean
       label: 'status'

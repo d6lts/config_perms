@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\config_perms\Entity\CustomPermsEntity;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Routing\RouteProvider;
 
 /**
  * Class ConfigPermListForm.
@@ -13,6 +15,30 @@ use Drupal\Core\Url;
  * @package Drupal\config_perms\Form
  */
 class ConfigPermListForm extends FormBase {
+
+  /**
+   * @var RouteProvider $routeProvider;
+   */
+  protected $routerProvider;
+
+  /**
+   * Class constructor.
+   */
+  public function __construct(RouteProvider $router_provider) {
+    $this->routerProvider = $router_provider;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    // Instantiates this form class.
+    return new static(
+    // Load the service required to construct this class.
+      $container->get('router.route_provider')
+    );
+  }
+
 
   /**
    * {@inheritdoc}
@@ -72,9 +98,9 @@ class ConfigPermListForm extends FormBase {
         '#size' => 30,
       ];
 
-      $form['perms']['local'][$key]['path'] = [
+      $form['perms']['local'][$key]['route'] = [
         '#type' => 'textarea',
-        '#default_value' => $perm->getPath(),
+        '#default_value' => $perm->getRoute(),
         '#size' => 50,
         '#rows' => 1,
       ];
@@ -108,7 +134,7 @@ class ConfigPermListForm extends FormBase {
         '#size' => 30,
       ];
 
-      $form['perms']['local']['new']['path'] = [
+      $form['perms']['local']['new']['route'] = [
         '#type' => 'textarea',
         '#default_value' => '',
         '#rows' => 2,
@@ -161,7 +187,7 @@ class ConfigPermListForm extends FormBase {
 
     foreach ($values['local'] as $key => $perm) {
 
-      if (empty($perm['name']) && empty($perm['path']) && $key != 'new') {
+      if (empty($perm['name']) && empty($perm['route']) && $key != 'new') {
         $entity = CustomPermsEntity::load($perm['id']);
         $entity->delete();
       }
@@ -170,20 +196,15 @@ class ConfigPermListForm extends FormBase {
           $form_state->setErrorByName("local][" . $key . "", $this->t("The name cannot be empty."));
         }
 
-        if (empty($perm['path'])) {
-          $form_state->setErrorByName("local][" . $key . "", $this->t("The path cannot be empty."));
+        if (empty($perm['route'])) {
+          $form_state->setErrorByName("local][" . $key . "", $this->t("The route cannot be empty."));
         }
         if (array_key_exists($this->configPermsGenerateMachineName($perm['name']), $perms) && !isset($perm['id'])) {
           $form_state->setErrorByName("local][" . $key . "", $this->t("A permission with that name already exists."));
         }
-        if (!empty($perm['path'])) {
-          $paths = $this->configPermsParsePath($perm['path']);
-          foreach ($paths as $path) {
-            $url_object = \Drupal::service('path.validator')
-              ->getUrlIfValidWithoutAccessCheck($path);
-            if (!$url_object) {
-              $form_state->setErrorByName("local][" . $key . "", $this->t("The path @path is invalid.", ['@path' => $path]));
-            }
+        if (!empty($perm['route'])) {
+          if (count($this->routerProvider->getRoutesByNames([$perm['route']])) < 1) {
+            $form_state->setErrorByName("local][" . $key . "", $this->t("The route @route is invalid.", ['@route' => $perm['route']]));
           }
         }
       }
@@ -202,46 +223,19 @@ class ConfigPermListForm extends FormBase {
       if ($key == 'new') {
         $entity = CustomPermsEntity::create();
         $entity->set('id', $this->configPermsGenerateMachineName($data['name']));
-        $entity->set('label', $data['name']);
-        $entity->set('path', $data['path']);
-        $entity->set('status', $data['status']);
-        $entity->save();
       }
       else {
         // Update || Insert.
-        if (!empty($data['name']) && !empty($data['path'])) {
-          $entity = $perms[$data['id']];
-          $entity->set('label', $data['name']);
-          $entity->set('path', $data['path']);
-          $entity->set('status', $data['status']);
-          $entity->save();
-        }
+        $entity = $perms[$data['id']];
       }
+      $entity->set('label', $data['name']);
+      $entity->set('route', $data['route']);
+      $entity->set('status', $data['status']);
+      $entity->save();
     }
 
     \Drupal::service('router.builder')->rebuild();
     drupal_set_message($this->t('The permissions have been saved.'));
-  }
-
-  /**
-   * Custom permission paths to array of paths.
-   *
-   * @param string $path
-   *   Path(s) given by the user.
-   *
-   * @return array|string
-   *   Implode paths in array of strings.
-   */
-  public function configPermsParsePath($path) {
-    if (is_array($path)) {
-      $string = implode("\n", $path);
-      return $string;
-    }
-    else {
-      $path = str_replace(["\r\n", "\n\r", "\n", "\r"], "\n", $path);
-      $parts = explode("\n", $path);
-      return $parts;
-    }
   }
 
   /**

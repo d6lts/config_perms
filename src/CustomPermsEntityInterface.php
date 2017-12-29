@@ -15,8 +15,8 @@ interface CustomPermsEntityInterface extends ConfigEntityInterface {
   public function getStatus();
 
   /**
-   * Get the permission paths.
+   * Get the permission route.
    */
-  public function getPath();
+  public function getRoute();
 
 }

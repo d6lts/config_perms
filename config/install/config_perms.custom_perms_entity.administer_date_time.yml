@@ -3,4 +3,4 @@ status: true
 dependencies: {  }
 id: administer_date_time
 label: 'Administer date-time'
-path: admin/config/regional/date-time
+route: entity.date_format.collection
