@@ -17,7 +17,9 @@ use Drupal\Core\Routing\RouteProvider;
 class ConfigPermListForm extends FormBase {
 
   /**
-   * @var RouteProvider $routeProvider;
+   * Router Provider service.
+   *
+   * @var \Drupal\Core\Routing\RouteProvider
    */
   protected $routerProvider;
 
@@ -38,7 +40,6 @@ class ConfigPermListForm extends FormBase {
       $container->get('router.route_provider')
     );
   }
-
 
   /**
    * {@inheritdoc}

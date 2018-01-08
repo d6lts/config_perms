@@ -15,13 +15,6 @@ class ConfigPermsTest extends BrowserTestBase {
   protected static $modules = ['config_perms'];
 
   /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-  }
-
-  /**
    * Tests that the permissions are applied correctly.
    */
   public function testPermissions() {
@@ -64,5 +57,5 @@ class ConfigPermsTest extends BrowserTestBase {
     $this->assertSession()->statusCodeEquals(403);
     $this->drupalLogout();
   }
-}
 
+}
