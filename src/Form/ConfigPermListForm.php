@@ -5,9 +5,10 @@ namespace Drupal\config_perms\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\config_perms\Entity\CustomPermsEntity;
+use Drupal\Core\Routing\RouteBuilderInterface;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Routing\RouteProvider;
 
 /**
  * Class ConfigPermListForm.
@@ -24,10 +25,23 @@ class ConfigPermListForm extends FormBase {
   protected $routerProvider;
 
   /**
-   * Class constructor.
+   * Router Builder service.
+   *
+   * @var \Drupal\Core\Routing\RouteBuilder
    */
-  public function __construct(RouteProvider $router_provider) {
+  protected $routerBuilder;
+
+  /**
+   * Class constructor.
+   *
+   * @param \Drupal\Core\Routing\RouteProviderInterface $router_provider
+   *   The router provider service.
+   * @param \Drupal\Core\Routing\RouteBuilderInterface $router_builder
+   *   The router builder service.
+   */
+  public function __construct(RouteProviderInterface $router_provider, RouteBuilderInterface $router_builder) {
     $this->routerProvider = $router_provider;
+    $this->routerBuilder = $router_builder;
   }
 
   /**
@@ -37,7 +51,8 @@ class ConfigPermListForm extends FormBase {
     // Instantiates this form class.
     return new static(
     // Load the service required to construct this class.
-      $container->get('router.route_provider')
+      $container->get('router.route_provider'),
+      $container->get('router.builder')
     );
   }
 
@@ -238,7 +253,7 @@ class ConfigPermListForm extends FormBase {
       $entity->save();
     }
 
-    \Drupal::service('router.builder')->rebuild();
+    $this->routerBuilder->rebuild();
     drupal_set_message($this->t('The permissions have been saved.'));
   }
 
