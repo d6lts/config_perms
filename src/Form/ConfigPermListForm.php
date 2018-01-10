@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\config_perms\Entity\CustomPermsEntity;
 use Drupal\Core\Routing\RouteBuilderInterface;
 use Drupal\Core\Routing\RouteProviderInterface;
-use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -122,12 +121,8 @@ class ConfigPermListForm extends FormBase {
       ];
 
       // Delete link.
-      $url_object = Url::fromUri('internal:/admin/structure/custom_perms_entity/' . $perm->id() . '/delete');
-      $delete_link = \Drupal::l($this->t('Delete'), $url_object);
-      $form['perms']['local'][$key]['delete'] = [
-        '#type' => 'item',
-        '#markup' => $delete_link,
-      ];
+      $delete_link = $perm->toLink($this->t('Delete'), 'delete-form');
+      $form['perms']['local'][$key]['delete'] = $delete_link->toRenderable();
       $form['perms']['local'][$key]['id'] = [
         '#type' => 'hidden',
         '#default_value' => $perm->id(),
