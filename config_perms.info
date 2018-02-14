@@ -1,3 +1,8 @@
 name = Site Configuration Permissions
 description = Allows additional permissions to be created and managed through a administration form.
 core = 6.x
+; Information added by Drupal 6 LTS vendors on 2018-02-14
+version = "6.x-2.1"
+core = "6.x"
+project = "config_perms"
+datestamp = "1518648296"
