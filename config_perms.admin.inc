@@ -19,6 +19,7 @@ function config_perms_admin_form(&$form_state, $type='') {
         "<li>" . t("Nothing will be available under Site building if 'display site building menu' is not checked") .
         "<li>" . t("Nothing will be available under Site configuration if 'display site configuration menu' is not checked") .
         //"<li>" . t("Any role without 'administer site configuration' will be granted access to whatever permissions checked in the config_perms section of the permissions page.") .
+        "<li>" . t("Custom permissions <strong>cannot</strong> protect dynamic paths, which includes individual content, users, etc. (with system paths that receive an argument via the URL, such as node/1, node/2/edit, user/5, etc.)") . "</li>\n" .
       "</ul>",
       //'<p>'. t("So in other words, if you want grant roles only a few of theses items, uncheck 'administer site configuration', check one or both of the display permissions, and check whatever you want them to have access to.") .'</p>',
     '#collapsible' => 1,
@@ -139,6 +140,32 @@ function config_perms_ahah() {
  * Validate handler
  */
 function config_perms_admin_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+
+  foreach ($values['local'] as $key => $perm) {
+    $perm = (object)$perm;
+    if (!$perm->remove) {
+      foreach (config_perms_parse_path($perm->path) as $path) {
+        $item = menu_get_item($path);
+        if ($item && strpos($item['path'], '%') !== FALSE) {
+          // Reconstruct the menu item key.
+          $keys = explode('/', $item['path']);
+          if (is_array($item['load_functions'])) {
+            foreach ($item['load_functions'] as $index => $load_function) {
+              if (strpos(strrev($load_function), strrev('_load')) === 0) {
+                $keys[$index] = '%' . substr($load_function, 0, -5);
+              }
+            }
+          }
+          $key = implode('/', $keys);
+
+          if ($path != $key) {
+            form_set_error("local][". $key ."", t('The path %path is a dynamic path which cannot be protected by custom permissions. You have give the exact path used in hook_menu() with any placeholders, for example: %key', array('%path' => $path, '%key' => $key)));
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
